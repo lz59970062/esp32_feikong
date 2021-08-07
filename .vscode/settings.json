@@ -1,0 +1,23 @@
+{
+    "files.associations": {
+        "*.ino": "c",
+        "*.m": "matlab",
+        "pid.h": "c",
+        "algorithm": "c",
+        "xlocale": "c",
+        "xstring": "c",
+        "xutility": "c",
+        "*.tcc": "c",
+        "string": "c",
+        "string_view": "c",
+        "random": "c",
+        "xiosbase": "cpp",
+        "xmemory": "cpp",
+        "eeprom.h": "c",
+        "map": "cpp",
+        "rtc_cntl_reg.h": "c",
+        "soc.h": "c",
+        "iterator": "cpp",
+        "cmath": "cpp"
+    }
+}
