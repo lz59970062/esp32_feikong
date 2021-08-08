@@ -270,11 +270,14 @@ void task_hpos(void *pvParameters)
   static portTickType xLastWakeTime;
   const portTickType xFrequency = 50;
   xLastWakeTime = xTaskGetTickCount();
-
+  bool state=0;
   while (1)
   {
 
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
     //opt_control();
+    if (state) opt_get();
+    state=!state
+    opt_co();
   }
 }

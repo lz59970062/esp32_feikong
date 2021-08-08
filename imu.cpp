@@ -123,11 +123,9 @@ void getdata()
     gy = rate * (float)JY901.stcGyro.w[1] / 32768 * 2000 + (1 - rate) * pgy;
     gz = rate * (float)JY901.stcGyro.w[2] / 32768 * 2000 + (1 - rate) * pgz;
     getquater();
-    ax=inited?ax-xoff:ax;
-    ay=inited?ay-yoff:ay;
-    az=inited?az-zoff:az;
+   
     rotates(ax, ay, az, q0, q1, q2, q3, &grand_ax, &grand_ay, &grand_az);
-
+    
 #ifdef IPOS
     posx += g_vx * dt;
     posy += g_vy * dt;

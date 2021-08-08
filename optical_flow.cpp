@@ -17,13 +17,13 @@ void optical_init()
 {
     Wire.begin(21, 22);
 }
-void opt_control()
+void opt_get()
 {
     float x_rate, y_rate, flow_x, flow_y;
     long loop_start = millis();
     static bool initflag = 0;
 
-    if (loop_start - last_check > 50)
+    if (loop_start - last_check > 100)
     {
         px4.update_integral();
         x_rate = px4.gyro_x_rate_integral() / 10.0f;  // mrad
@@ -41,11 +41,18 @@ void opt_control()
 
             // Scale based on ground distance and compute speed
             // (flow/1000) * (ground_distance/1000) / (timespan/1000000)
-            float velocity_x = (float)pixel_x * altitude / timespan; // m/s
-            float velocity_y = (float)pixel_y * altitude / timespan; // m/s
+            float velocity_x = (float)pixel_x * altitude*10 / timespan; // m/s
+            float velocity_y = (float)pixel_y * altitude *10/ timespan; // m/s
             //Serial.printf("%f,%f",velocity_x,velocity_y);
+            Serial.printf("%f,%f\n",velocity_x,velocity_y);
             // Integrate velocity to get pose estimate
-            if (!initflag)
+         
+        }
+    }
+    last_check = loop_start;
+}
+void opt_co(){
+    if (!initflag)
             {
                 hposx.Set_errormax(2);
                 hposx.Set_i_error(3);
@@ -70,7 +77,4 @@ void opt_control()
             posepid.expect[roll]=xout;
             posepid.expect[pitch]=yout;
 
-        }
-    }
-    last_check = loop_start;
 }

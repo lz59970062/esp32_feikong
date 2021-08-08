@@ -1,2 +1,3 @@
 void optical_init();
-void opt_control();
+void opt_co();
+void opt_get();
