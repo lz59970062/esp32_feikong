@@ -755,12 +755,12 @@ void heightcontrol()
         }
 
     } 
-    Serial.printf(" %f,%f\n", expect_h, altitude);
+    //Serial.printf(" %f,%f\n", expect_h, altitude);
 }
 void hight_acc()
 {
     static bool initflag = 0;
-    //Serial.println(grand_az);
+    Serial.println(grand_az);
     if (Flying_flag && !Landed_flag)
     {
         if (!initflag)
@@ -777,7 +777,8 @@ void hight_acc()
        
         h2.Set_pid(posepid.p[1], posepid.i[1], posepid.d[1]);
         //fabs(expect  (grand_az + 9.83) * 100) < 3 ? expect = -(grand_az + 9.83) * 100 : 1;
-        h2.Set_ex_feed(expect, -(grand_az + 9.83) * 100);
+       
+        h2.Set_ex_feed(expect, (grand_az - 9.82));
         int hight2_out = (int)h2.PID_Control_Err_LPF();
         thr = hover_thr + hight2_out;
     }

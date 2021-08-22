@@ -1,12 +1,5 @@
 #include <Arduino.h>
-#line 41 "e:\\飞总\\电赛\\main.ino"
-void setup();
-#line 63 "e:\\飞总\\电赛\\main.ino"
-void loop();
-#line 232 "e:\\飞总\\电赛\\main.ino"
-void task_high_acc(void *pvParameters);
-#line 0 "e:\\飞总\\电赛\\main.ino"
-#line 1 "e:\\飞总\\电赛\\JY901.cpp"
+#line 1 "e:\\飞总\\电赛\\电赛\\JY901.cpp"
 #include "JY901.h"
 #include "string.h"
 
@@ -135,7 +128,7 @@ void CJY901::GetQ()
 	readRegisters(ucDevAddr,Q0,8,(char*)&stcSQ);
 }
 CJY901 JY901 = CJY901();
-#line 1 "e:\\飞总\\电赛\\main.ino"
+#line 1 "e:\\飞总\\电赛\\电赛\\main.ino"
 #include <soc/soc.h>
 #include <soc/rtc_cntl_reg.h>
 #include "escout.h"
@@ -159,7 +152,6 @@ float q0, q1, q2, q3;
 int out1, out2, out3, out4;
 float ex_roll, ex_pitch, ex_yaw;
 
-KFP KFP_height = {0.02, 0, 0, 0, 0.001, 0.543};
 k pid;
 
 uint8_t fly_flag;
@@ -172,7 +164,7 @@ void vTask3(void *pvParameters);
 void vTask4(void *pvParameters);
 void task_high(void *pvParameters);
 void task_led(void *pvParameters);
-void task_hpos(void *pvParameters);
+//void task_hpos(void *pvParameters);
 void tadk_high_acc(void *pvParameters);
 
 //wifi在core0，其他在core1；1为大核
@@ -186,14 +178,14 @@ void setup()
   EEPROM.begin(lenth + 1);
   gethigh_init();
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);                        //关闭低电压检测,避免无限重启
-  xTaskCreatePinnedToCore(Task1, "Task1", 10000, NULL, 2, NULL, 0); //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+  xTaskCreatePinnedToCore(Task1, "Task1",10000, NULL, 2, NULL, 0); //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
   xTaskCreatePinnedToCore(Task2, "Task2", 10000, NULL, 1, NULL, 1);
-  xTaskCreatePinnedToCore(vTask3, "rate", 20000, NULL, 1, NULL, 1);
+  xTaskCreatePinnedToCore(vTask3, "rate", 10000, NULL, 1, NULL, 1);
   xTaskCreatePinnedToCore(vTask4, "pos", 10000, NULL, 3, NULL, 1);
-  xTaskCreatePinnedToCore(task_high, "high_pid", 30000, NULL, 1, NULL, 1);
-  xTaskCreatePinnedToCore(task_led, "led_blink", 1024, NULL, 1, NULL, 0);
-  xTaskCreatePinnedToCore(task_hpos, "hpos", 4000, NULL, 1, NULL, 0);
-  xTaskCreatePinnedToCore(task_high_acc, "high_acc", 8000, NULL, 1, NULL, 1);
+  xTaskCreatePinnedToCore(task_high, "high_pid", 10000, NULL, 1, NULL, 1);
+  xTaskCreatePinnedToCore(task_led, "led_blink", 1024, NULL, 2, NULL, 0);
+  //xTaskCreatePinnedToCore(task_hpos, "hpos", 20000, NULL,2, NULL, 1);
+  xTaskCreatePinnedToCore(task_high_acc, "high_acc", 10000, NULL, 1, NULL, 1);
   //vTaskStartScheduler();;
   //实现任务的函数名称（task1）；任务的任何名称（“ task1”等）；分配给任务的堆栈大小，以字为单位；任务输入参数（可以为NULL）；任务的优先级（0是最低优先级）；任务句柄（可以为NULL）；任务将运行的内核ID（0或1）
 }
@@ -204,23 +196,24 @@ void loop()
 
 void Task1(void *pvParameters)
 {
+  static portTickType xLastWakeTime;
+  const portTickType xFrequency = 1;
   bool ifreaded = 0;
   int time1 = 0;
   imu_init();
-
+  KFP KFP_height = {0.02, 0, 0, 0, 0.001, 0.543};
   //unsigned portBASE_TYPE uxHighWaterMark;//
-
+  xLastWakeTime = xTaskGetTickCount();
   Serial.println("start");
   //在这里可以添加一些代码，这样的话这个任务执行时会先执行一次这里的内容（当然后面进入while循环之后不会再执行这部分了）
   EEPROM.readBytes(0, buff, lenth);
-
+  uint16_t hposcnt=0;
   esc_write(1000, 1000, 1000, 1000);
   delay(1);
   while (1)
   {
-    time1 += 1;
-    if (time1 == 65535)
-      time1 = 0;
+    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+
     ///////////////////////////read pid///////////////////
     //uxHighWaterMark=uxTaskGetStackHighWaterMark( NULL);
     //Serial.print("Task1");
@@ -242,14 +235,22 @@ void Task1(void *pvParameters)
       ifreaded = 0;
     }
     gethight(&raw_altitude);
-   // raw_altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180);
+    //vTaskDelay(1);
+    // raw_altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180);
     altitude = kalmanFilter(&KFP_height, raw_altitude);
     //Serial.printf("%f   %f    %f     \n",pid.p1[0],pid.p2[1],pid.i1[2]);
     //////////////////////////////////read sensor///////////////////////////////
-
+    //Serial.println(altitude);
+    //Serial.printf("%f,%f,%f\n", Roll_angle, Pitch_angle, Yaw_angle);
     //getquater();
     getdata();
-    //Serial.printf("%f,%f\n",a_hight,grand_az);
+    hposcnt++;
+    if (hposcnt%25==0) opt_co();
+    if(hposcnt==50) {
+      hposcnt=0;
+      opt_get();
+    }
+    //Serial.printf("%f,\n",grand_az);
     //Serial.print(Roll_angle);
     //Serial.print(',');
     //Serial.print(Pitch_angle);
@@ -303,16 +304,15 @@ void vTask3(void *pvParameters)
 {
   static portTickType xLastWakeTime;
   const portTickType xFrequency = 2;
-  long now = micros();
-  int dt3;
-  bool state;
+  
+
+
   // 使用当前时间初始化变量xLastWakeTime
   xLastWakeTime = xTaskGetTickCount();
 
   for (;;)
   {
-    dt3 = micros() - now;
-    now = micros();
+
     //等待下一个周期
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
     rate_pid();
@@ -357,7 +357,7 @@ void task_high(void *pvParameters)
 
   // 使用当前时间初始化变量xLastWakeTime
   xLastWakeTime = xTaskGetTickCount();
-  
+
   for (;;)
   {
     //等待下一个周期
@@ -374,12 +374,13 @@ void task_high_acc(void *pvParameters)
 
   // 使用当前时间初始化变量xLastWakeTime
   xLastWakeTime = xTaskGetTickCount();
+ 
 
   for (;;)
   {
     //等待下一个周期
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
-
+    
     hight_acc();
     // 需要周期性执行代码放在这里
   }
@@ -403,19 +404,22 @@ void task_led(void *pvParameters)
   }
 }
 
-void task_hpos(void *pvParameters)
+/* void task_hpos(void *pvParameters)
 {
   static portTickType xLastWakeTime;
   const portTickType xFrequency = 50;
   xLastWakeTime = xTaskGetTickCount();
-  bool state=0;
+  bool state = 0;
+  Serial.println("here2");
   while (1)
   {
 
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    Serial.println("here1");
     //opt_control();
-    if (state) opt_get();
-    state=!state
+    if (!state)
+      opt_get();
+    state = !state;
     opt_co();
   }
-}
+} */
