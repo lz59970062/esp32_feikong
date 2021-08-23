@@ -1,0 +1,269 @@
+{
+    "extension": "linecounter",
+    "version": "0.2.7",
+    "workspace": "e:\\飞总\\电赛\\电赛",
+    "linecount": [
+        {
+            "version": "0.2.7",
+            "counttime": "2021-08-09 22:49:36",
+            "filesum": 35,
+            "codesum": 1661,
+            "commentsum": 442,
+            "blanksum": 197,
+            "statistics": {
+                "": {
+                    "code": 0,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".h": {
+                    "code": 282,
+                    "comment": 39,
+                    "blank": 23
+                },
+                ".cpp": {
+                    "code": 1192,
+                    "comment": 314,
+                    "blank": 143
+                },
+                ".ino": {
+                    "code": 178,
+                    "comment": 89,
+                    "blank": 30
+                },
+                ".json": {
+                    "code": 9,
+                    "comment": 0,
+                    "blank": 1
+                }
+            },
+            "filelist": [
+                {
+                    "blank": 0,
+                    "code": 3,
+                    "comment": 0,
+                    "filename": ".vs\\ProjectSettings.json"
+                },
+                {
+                    "filename": ".vs\\slnx.sqlite",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 1,
+                    "code": 6,
+                    "comment": 0,
+                    "filename": ".vs\\VSWorkspaceState.json"
+                },
+                {
+                    "filename": ".vs\\电赛\\v16\\.suo",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\电赛\\v16\\Browse.VC.db",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\电赛\\v16\\ipch\\AutoPCH\\3596b0279240d15f\\JY901.ipch",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\电赛\\v16\\ipch\\AutoPCH\\57bfaf3d976e9efd\\PID.ipch",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\飞控\\v16\\.suo",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\飞控\\v16\\Browse.VC.db",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\飞控\\v16\\ipch\\AutoPCH\\44e2fdb9ec3c8090\\PID.ipch",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\飞控\\v16\\ipch\\AutoPCH\\4658b0b9b23d4f29\\PID.ipch",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\飞控\\v16\\ipch\\AutoPCH\\63f7aa6cdadbdc3b\\RF2401.ipch",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\飞控\\v16\\ipch\\AutoPCH\\791621ec9bb861c9\\ESCOUT.ipch",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\飞控\\v16\\ipch\\AutoPCH\\a19636c5a54a9c7c\\RF24.ipch",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\飞控\\v16\\ipch\\AutoPCH\\abe75ab32231ff61\\LED.ipch",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": ".vs\\飞控\\v16\\ipch\\AutoPCH\\ad66446de3ef82da\\VOLTAGE.ipch",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 1,
+                    "code": 14,
+                    "comment": 2,
+                    "filename": "escout.cpp"
+                },
+                {
+                    "blank": 0,
+                    "code": 2,
+                    "comment": 0,
+                    "filename": "escout.h"
+                },
+                {
+                    "blank": 18,
+                    "code": 160,
+                    "comment": 42,
+                    "filename": "gethight.cpp"
+                },
+                {
+                    "blank": 3,
+                    "code": 16,
+                    "comment": 7,
+                    "filename": "gethight.h"
+                },
+                {
+                    "blank": 17,
+                    "code": 164,
+                    "comment": 12,
+                    "filename": "imu.cpp"
+                },
+                {
+                    "blank": 1,
+                    "code": 4,
+                    "comment": 0,
+                    "filename": "imu.h"
+                },
+                {
+                    "blank": 8,
+                    "code": 120,
+                    "comment": 4,
+                    "filename": "JY901.cpp"
+                },
+                {
+                    "blank": 8,
+                    "code": 167,
+                    "comment": 0,
+                    "filename": "JY901.h"
+                },
+                {
+                    "blank": 30,
+                    "code": 178,
+                    "comment": 89,
+                    "filename": "main.ino"
+                },
+                {
+                    "blank": 9,
+                    "code": 82,
+                    "comment": 16,
+                    "filename": "optical_flow.cpp"
+                },
+                {
+                    "blank": 0,
+                    "code": 3,
+                    "comment": 0,
+                    "filename": "optical_flow.h"
+                },
+                {
+                    "blank": 80,
+                    "code": 588,
+                    "comment": 236,
+                    "filename": "pid.cpp"
+                },
+                {
+                    "blank": 10,
+                    "code": 80,
+                    "comment": 32,
+                    "filename": "pid.h"
+                },
+                {
+                    "blank": 9,
+                    "code": 46,
+                    "comment": 2,
+                    "filename": "state_handle.cpp"
+                },
+                {
+                    "blank": 0,
+                    "code": 4,
+                    "comment": 0,
+                    "filename": "state_handle.h"
+                },
+                {
+                    "blank": 1,
+                    "code": 18,
+                    "comment": 0,
+                    "filename": "voltage.cpp"
+                },
+                {
+                    "blank": 1,
+                    "code": 6,
+                    "comment": 0,
+                    "filename": "voltage.h"
+                },
+                {
+                    "filename": "四旋翼飞行器电路原理图\\四旋翼飞行器电路原理图.png",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0,
+                    "filename": "电赛"
+                }
+            ]
+        }
+    ]
+}

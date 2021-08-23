@@ -106,7 +106,7 @@ void Task1(void *pvParameters)
     }
     gethight(&raw_altitude,&v_hight);
     //vTaskDelay(1);
-    altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180);
+    altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180);//////高度修正存在问题！！！！！！！！！！！！！
     //altitude = kalmanFilter(&KFP_height, raw_altitude);
     //Serial.printf("%f   %f    %f     \n",pid.p1[0],pid.p2[1],pid.i1[2]);
     //////////////////////////////////read sensor///////////////////////////////
@@ -116,7 +116,7 @@ void Task1(void *pvParameters)
     getdata();
     
     hposcnt++;
-    if (hposcnt%25==0) opt_co();//25毫秒执行一次
+    if (hposcnt%25==0) opt_co();//25毫秒执行一次//////光流pid异常
     if(hposcnt==75) {
       hposcnt=0;
       opt_get();
@@ -155,7 +155,7 @@ void Task2(void *pvParameters)
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
     out(&out1, &out2, &out3, &out4);
-    vTaskDelay(2);
+    vTaskDelay(1);
     fly_handle();
     if (pid.startflag)
       esc_write(out1, out2, out3, out4);

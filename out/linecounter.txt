@@ -1,0 +1,56 @@
+===============================================================================
+EXTENSION NAME : linecounter
+EXTENSION VERSION : 0.2.7
+-------------------------------------------------------------------------------
+count time : 2021-08-09 22:49:36
+count workspace : e:\飞总\电赛\电赛
+total files : 35
+total code lines : 1661
+total comment lines : 442
+total blank lines : 197
+
+    statistics
+   |      extension|     total code|  total comment|    total blank|percent|
+   -------------------------------------------------------------------------
+   |               |              0|              0|              0|    0.0|
+   |             .h|            282|             39|             23|     17|
+   |           .cpp|           1192|            314|            143|     72|
+   |           .ino|            178|             89|             30|     11|
+   |          .json|              9|              0|              1|   0.54|
+   -------------------------------------------------------------------------
+.vs\ProjectSettings.json, code is 3, comment is 0, blank is 0.
+.vs\slnx.sqlite, it is a binary file.
+.vs\VSWorkspaceState.json, code is 6, comment is 0, blank is 1.
+.vs\电赛\v16\.suo, it is a binary file.
+.vs\电赛\v16\Browse.VC.db, it is a binary file.
+.vs\电赛\v16\ipch\AutoPCH\3596b0279240d15f\JY901.ipch, it is a binary file.
+.vs\电赛\v16\ipch\AutoPCH\57bfaf3d976e9efd\PID.ipch, it is a binary file.
+.vs\飞控\v16\.suo, it is a binary file.
+.vs\飞控\v16\Browse.VC.db, it is a binary file.
+.vs\飞控\v16\ipch\AutoPCH\44e2fdb9ec3c8090\PID.ipch, it is a binary file.
+.vs\飞控\v16\ipch\AutoPCH\4658b0b9b23d4f29\PID.ipch, it is a binary file.
+.vs\飞控\v16\ipch\AutoPCH\63f7aa6cdadbdc3b\RF2401.ipch, it is a binary file.
+.vs\飞控\v16\ipch\AutoPCH\791621ec9bb861c9\ESCOUT.ipch, it is a binary file.
+.vs\飞控\v16\ipch\AutoPCH\a19636c5a54a9c7c\RF24.ipch, it is a binary file.
+.vs\飞控\v16\ipch\AutoPCH\abe75ab32231ff61\LED.ipch, it is a binary file.
+.vs\飞控\v16\ipch\AutoPCH\ad66446de3ef82da\VOLTAGE.ipch, it is a binary file.
+escout.cpp, code is 14, comment is 2, blank is 1.
+escout.h, code is 2, comment is 0, blank is 0.
+gethight.cpp, code is 160, comment is 42, blank is 18.
+gethight.h, code is 16, comment is 7, blank is 3.
+imu.cpp, code is 164, comment is 12, blank is 17.
+imu.h, code is 4, comment is 0, blank is 1.
+JY901.cpp, code is 120, comment is 4, blank is 8.
+JY901.h, code is 167, comment is 0, blank is 8.
+main.ino, code is 178, comment is 89, blank is 30.
+optical_flow.cpp, code is 82, comment is 16, blank is 9.
+optical_flow.h, code is 3, comment is 0, blank is 0.
+pid.cpp, code is 588, comment is 236, blank is 80.
+pid.h, code is 80, comment is 32, blank is 10.
+state_handle.cpp, code is 46, comment is 2, blank is 9.
+state_handle.h, code is 4, comment is 0, blank is 0.
+voltage.cpp, code is 18, comment is 0, blank is 1.
+voltage.h, code is 6, comment is 0, blank is 1.
+四旋翼飞行器电路原理图\四旋翼飞行器电路原理图.png, it is a binary file.
+电赛, code is 0, comment is 0, blank is 0.
+===============================================================================

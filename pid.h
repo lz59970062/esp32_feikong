@@ -15,6 +15,7 @@ typedef struct
     float ex_h;
     float evx,xp,xi,xd;
     float evy,yp,yi,yd;
+    bool state[4];
     float startflag;
 } k;
 

@@ -1,4 +1,11 @@
 #include <Arduino.h>
+#line 41 "e:\\飞总\\电赛\\电赛\\main.ino"
+void setup();
+#line 62 "e:\\飞总\\电赛\\电赛\\main.ino"
+void loop();
+#line 235 "e:\\飞总\\电赛\\电赛\\main.ino"
+void task_high_acc(void *pvParameters);
+#line 0 "e:\\飞总\\电赛\\电赛\\main.ino"
 #line 1 "e:\\飞总\\电赛\\电赛\\JY901.cpp"
 #include "JY901.h"
 #include "string.h"
@@ -145,7 +152,7 @@ float Yaw_angle, Roll_angle, Pitch_angle;
 float gx, gy, gz, ax, ay, az;
 float g_vx = 0, g_vy = 0, g_vz = 0, posx = 0, posy = 0, posz = 0;
 float raw_altitude, altitude;
-float a_hight;
+float v_hight;
 float grand_ax, grand_ay, grand_az;
 float expect_h = 20;
 float q0, q1, q2, q3;
@@ -158,6 +165,7 @@ uint8_t fly_flag;
 int lenth = sizeof(k);
 byte buff[sizeof(k)];
 int lowpower, verylowpower;
+
 void Task1(void *pvParameters);
 void Task2(void *pvParameters);
 void vTask3(void *pvParameters);
@@ -184,14 +192,14 @@ void setup()
   xTaskCreatePinnedToCore(vTask4, "pos", 10000, NULL, 3, NULL, 1);
   xTaskCreatePinnedToCore(task_high, "high_pid", 10000, NULL, 1, NULL, 1);
   xTaskCreatePinnedToCore(task_led, "led_blink", 1024, NULL, 2, NULL, 0);
-  //xTaskCreatePinnedToCore(task_hpos, "hpos", 20000, NULL,2, NULL, 1);
   xTaskCreatePinnedToCore(task_high_acc, "high_acc", 10000, NULL, 1, NULL, 1);
-  //vTaskStartScheduler();;
+  //vTaskStartScheduler();
   //实现任务的函数名称（task1）；任务的任何名称（“ task1”等）；分配给任务的堆栈大小，以字为单位；任务输入参数（可以为NULL）；任务的优先级（0是最低优先级）；任务句柄（可以为NULL）；任务将运行的内核ID（0或1）
 }
 
 void loop()
 {
+
 }
 
 void Task1(void *pvParameters)
@@ -225,7 +233,7 @@ void Task1(void *pvParameters)
       EEPROM.writeBytes(0, buff, lenth);
       EEPROM.commit();
       ifreaded = 1;
-      //Reset_pose_i();//清空积分项
+      Reset_pose_i();//清空积分项
     }
     if (ifreaded)
     {
@@ -234,23 +242,24 @@ void Task1(void *pvParameters)
       copy(pid);
       ifreaded = 0;
     }
-    gethight(&raw_altitude);
+    gethight(&raw_altitude,&v_hight);
     //vTaskDelay(1);
-    // raw_altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180);
-    altitude = kalmanFilter(&KFP_height, raw_altitude);
+    altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180);//////高度修正存在问题！！！！！！！！！！！！！
+    //altitude = kalmanFilter(&KFP_height, raw_altitude);
     //Serial.printf("%f   %f    %f     \n",pid.p1[0],pid.p2[1],pid.i1[2]);
     //////////////////////////////////read sensor///////////////////////////////
-    //Serial.println(altitude);
+    //Serial.printf("vz %f\n",v_hight);
     //Serial.printf("%f,%f,%f\n", Roll_angle, Pitch_angle, Yaw_angle);
     //getquater();
     getdata();
+    
     hposcnt++;
-    if (hposcnt%25==0) opt_co();
-    if(hposcnt==50) {
+    if (hposcnt%25==0) opt_co();//25毫秒执行一次//////光流pid异常
+    if(hposcnt==75) {
       hposcnt=0;
       opt_get();
     }
-    //Serial.printf("%f,\n",grand_az);
+    //Serial.printf("%.7f,\n",grand_az);
     //Serial.print(Roll_angle);
     //Serial.print(',');
     //Serial.print(Pitch_angle);
@@ -284,7 +293,7 @@ void Task2(void *pvParameters)
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
     out(&out1, &out2, &out3, &out4);
-    vTaskDelay(2);
+    vTaskDelay(1);
     fly_handle();
     if (pid.startflag)
       esc_write(out1, out2, out3, out4);
@@ -304,8 +313,6 @@ void vTask3(void *pvParameters)
 {
   static portTickType xLastWakeTime;
   const portTickType xFrequency = 2;
-  
-
 
   // 使用当前时间初始化变量xLastWakeTime
   xLastWakeTime = xTaskGetTickCount();
@@ -326,11 +333,10 @@ void vTask4(void *pvParameters)
   long now = micros();
   bool flag = 0;
   unsigned portBASE_TYPE uxPriority;
-
   xLastWakeTime = xTaskGetTickCount();
   bool state = 0;
   // 使用当前时间初始化变量xLastWakeTime
-
+  
   for (;;)
   {
     if (!flag)
@@ -354,15 +360,12 @@ void task_high(void *pvParameters)
 {
   static portTickType xLastWakeTime;
   const portTickType xFrequency = 10;
-
   // 使用当前时间初始化变量xLastWakeTime
   xLastWakeTime = xTaskGetTickCount();
-
   for (;;)
   {
     //等待下一个周期
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
-
     heightcontrol();
     // 需要周期性执行代码放在这里
   }
@@ -370,12 +373,9 @@ void task_high(void *pvParameters)
 void task_high_acc(void *pvParameters)
 {
   static portTickType xLastWakeTime;
-  const portTickType xFrequency = 5;
-
+  const portTickType xFrequency = 3;
   // 使用当前时间初始化变量xLastWakeTime
   xLastWakeTime = xTaskGetTickCount();
- 
-
   for (;;)
   {
     //等待下一个周期

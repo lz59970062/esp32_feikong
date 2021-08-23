@@ -9,7 +9,7 @@
 extern float Yaw_angle, Roll_angle, Pitch_angle;
 extern float gx, gy, gz;
 extern float altitude;
-extern float a_hight;
+extern float v_hight;
 extern float grand_az;
 extern float g_vx, g_vy, g_vz;
 extern float ex_roll, ex_pitch, ex_yaw;
@@ -88,7 +88,7 @@ float posoutangle[3];
 float posoutrate[3];
 float p[2], i[2], d[2];
 int highpre = 0, higherror;
-int thr = 1000;
+int thr = 1300;
 //要传输，读取的pid常数
 typedef struct
 {
@@ -98,6 +98,7 @@ typedef struct
     float ex_h;
     float evx, xp, xi, xd;
     float evy, yp, yi, yd;
+    bool state[4];
     float startflag;
 } k;
 
@@ -197,8 +198,8 @@ float ki_process(float k, float error, uint8_t limit, float i_item) //积分常�
         rate = map(fabs(error), 0, limit, 2, 0);
     return rate * k;
 }
-void posturepid()
 
+void posturepid()
 {
     static bool state = 0;
     double dt;
@@ -211,7 +212,6 @@ void posturepid()
         traget_initflag = 1;
     }
 #ifdef Debug
-
 #endif
 
     if (inited)
@@ -219,10 +219,16 @@ void posturepid()
         pt > 0 ? pt : 0;
         dt = (micros() - pt) * 0.000001;
         pt = micros();
+        if (Roll_angle > 80 || Pitch_angle > 80)
+        {
+            Landed_flag = 1;
+            Flying_flag = 0;
+            Start_flag = 0;
+        }
 
         poserror.error1[roll] = posepid.expect[roll] - Roll_angle;
         poserror.error1[pitch] = posepid.expect[pitch] - Pitch_angle;
-        poserror.error1[yaw] = posepid.expect[yaw] - Yaw_angle;
+        poserror.error1[yaw] = 0; //posepid.expect[yaw] - Yaw_angle;
         //fabs(poserror.error1[roll]) < 0.5 ? poserror.error1[roll] = 0 : 1;
         //fabs(poserror.error1[pitch]) < 0.5 ? poserror.error1[pitch] = 0 : 1;
         //fabs(poserror.error1[yaw]) < 0.5 ? poserror.error1[yaw] = 0 : 1;
@@ -277,8 +283,8 @@ void rate_pid()
 
     poserror.error2[roll] = expect2.ex[roll] - gx;
     poserror.error2[pitch] = expect2.ex[pitch] - gy;
-    poserror.error2[yaw] = expect2.ex[yaw] - gz;
-
+    //poserror.error2[yaw] = expect2.ex[yaw] - gz;
+    poserror.error2[yaw] = posepid.expect[yaw];
     poserror.error2[roll] = Control_Device_LPF(poserror.error2[roll], &rate_datax, &rate_parameter);
     poserror.error2[pitch] = Control_Device_LPF(poserror.error2[pitch], &rate_datay, &rate_parameter);
     poserror.error2[yaw] = Control_Device_LPF(poserror.error2[yaw], &rate_dataz, &rate_parameter);
@@ -314,9 +320,12 @@ void rate_pid()
 }
 void Reset_pose_i()
 {
-    posout2[yaw].oi = posout2[roll].oi = posout2[pitch].oi = posout1[yaw].oi = posout1[roll].oi = posout1[pitch].oi = 0;
-    thr = 1000;
-    hover_thr = 1000;
+    if (posepid.state[1])
+    {
+        posout2[yaw].oi = posout2[roll].oi = posout2[pitch].oi = posout1[yaw].oi = posout1[roll].oi = posout1[pitch].oi = 0;
+        thr = 1250;
+        hover_thr = 1000;
+    }
 }
 #ifdef Debug
 //Serial.printf("posout %f   %f    %f   \n", poserror.error1[roll], poserror.error1[pitch], poserror.error1[yaw]);
@@ -433,7 +442,7 @@ void PID::Set_Cutoff_Frequency(float sample_frequent, float cutoff_frequent, But
 {
     float fr = sample_frequent / cutoff_frequent;
     float ohm = tan(M_PI_F / fr);
-    float c = 1.0f + 2.0f * cosf(M_PI_F / 4.0f) * ohm + ohm * ohm;
+    float c = 1.0f + 2.0f * cos(M_PI_F / 4.0f) * ohm + ohm * ohm;
     if (cutoff_frequent <= 0.0f)
     {
         // no filtering
@@ -444,7 +453,7 @@ void PID::Set_Cutoff_Frequency(float sample_frequent, float cutoff_frequent, But
     LPF->b[2] = LPF->b[0];
     LPF->a[0] = 1.0f;
     LPF->a[1] = 2.0f * (ohm * ohm - 1.0f) / c;
-    LPF->a[2] = (1.0f - 2.0f * cosf(M_PI_F / 4.0f) * ohm + ohm * ohm) / c;
+    LPF->a[2] = (1.0f - 2.0f * cos(M_PI_F / 4.0f) * ohm + ohm * ohm) / c;
 }
 
 float PID::PID_Control_Div_LPF()
@@ -577,10 +586,10 @@ float PID::PID_Control_Err_LPF()
             Integrate = -Integrate_Max;
     }
     /*******总输出计算*********************/
-    Last_Control_OutPut = Control_OutPut; //输出值递推
-    Control_OutPut = Kp * Err_LPF         //比例
-                     + Integrate          //积分
-                     + Kd * Dis_Err_LPF;  //已对偏差低通，此处不再对微分项单独低通
+    Last_Control_OutPut = Control_OutPut;                //输出值递推
+    Control_OutPut = Kp * Err_LPF                        //比例
+                     + Integrate                         //积分
+                     + Kd * Dis_Err_LPF / controller_dt; //已对偏差低通，此处不再对微分项单独低通
     /*******总输出限幅*********************/
     Control_OutPut = constrain(Control_OutPut, -Control_OutPut_Limit, Control_OutPut_Limit);
     /*******返回总输出*********************/
@@ -691,6 +700,43 @@ float PID::PID_Control_Err_LPF()
 // #endif
 // }
 //高度pid第二版本
+
+////////////////////////////////转化预期高度////////////////////////////////
+uint8_t climb_process(int ex_h)
+{
+    int gap = 10;
+    static int last_ex = altitude + gap;
+    if (altitude < ex_h)
+    {
+        if (altitude > last_ex)
+        {
+            last_ex += gap;
+            return last_ex;
+        }
+        else
+            return last_ex;
+    }
+    else
+        return ex_h;
+}
+void hover_get(float expect)
+{
+
+    static float min_error = 20;
+    if (fabs(expect - altitude) < 5)
+    {
+        float now_error = fabs(grand_az - 8.438) * 100;
+        if (now_error < min_error)
+        {
+            min_error = now_error;
+            hover_thr = thr;
+        }
+    }
+    else if ((grand_az - 8.438) * 100 > 400)
+        thr--;
+    else if ((grand_az - 8.438) * 100 < -400)
+        thr++;
+}
 PID h1;
 PID h2;
 int hight1_out = 0;
@@ -721,7 +767,7 @@ void heightcontrol()
             if (cnt2 % 5 == 0)
             {
                 thr--;
-                if (thr == 1000)
+                if (thr == 1250)
                 {
                     Landed_flag = 1;
                     Landing_flag = 0;
@@ -734,53 +780,61 @@ void heightcontrol()
         if (Flying_flag && !Landed_flag)
         {
             cnt1 = 0;
-            digitalWrite(27, 1);
+
             if (!initflag)
             {
-
-                h1.Set_errormax(15);
+                h1.Set_errormax(20);
                 h1.Set_i_error(170);
                 h1.Set_i_mode(0, 1, 1);
                 h1.Set_Cutoff_Frequency(100, 20, &h1.Control_Device_Div_LPF_Parameter);
+                h1.Integrate_Separation_Err = 20;
                 h1.Control_OutPut_Limit = 300;
                 initflag = 1;
             }
-
             ////////////////////////////////////////////////////////////////////////
             expect_h = posepid.ex_h;
-
-            h1.Set_pid(posepid.p[0], posepid.i[0], posepid.d[0]);
+            hover_get(expect_h);
+            if (fabs(expect_h - altitude) < 1)
+                expect_h = altitude;
+            float ki = ki_process(posepid.i[0], expect_h - altitude, 20);
+            h1.Set_pid(posepid.p[0], ki, posepid.d[0]);
             h1.Set_ex_feed(expect_h, altitude);
             hight1_out = (int)h1.PID_Control_Div_LPF();
+            //Serial.println(hight1_out);
+            // thr = hover_thr + hight1_out;
         }
-
-    } 
-    //Serial.printf(" %f,%f\n", expect_h, altitude);
+    }
+    Serial.printf("%f,%f,%f,%d,%f\n",expect_h,altitude,grand_az,hight1_out,h2.Control_OutPut);
 }
+
+
 void hight_acc()
 {
     static bool initflag = 0;
-    Serial.println(grand_az);
-    if (Flying_flag && !Landed_flag)
+    //Serial.println(grand_az);
+    if (Start_flag)
     {
-        if (!initflag)
+        if (Flying_flag && !Landed_flag)
         {
+            if (!initflag)
+            {
+                
+                h2.Set_i_error(400);
+                h2.Set_i_mode(0, 1, 1);
+                h2.Set_Cutoff_Frequency(200, 20, &h2.Control_Device_Div_LPF_Parameter);
+                h2.Control_OutPut_Limit = 400;
+                h2.Integrate_Separation_Err = 500;
+                initflag = 1;
+            }
+            float expect = hight1_out;
 
-            h2.Set_errormax(5);
-            h2.Set_i_error(170);
-            h2.Set_i_mode(0, 1, 1);
-            h2.Set_Cutoff_Frequency(200, 40, &h2.Control_Device_Div_LPF_Parameter);
-            h2.Control_OutPut_Limit = 300;
-            initflag = 1;
+            h2.Set_pid(posepid.p[1], posepid.i[1], posepid.d[1]);
+
+            fabs(expect -v_hight*0.1) < 30 ? expect = v_hight*0.1 : 1;
+            h2.Set_ex_feed(expect, v_hight*0.1);
+            int hight2_out = (int)h2.PID_Control_Err_LPF();
+            thr = hover_thr + hight2_out-20;
         }
-        float expect = hight1_out;
-       
-        h2.Set_pid(posepid.p[1], posepid.i[1], posepid.d[1]);
-        //fabs(expect  (grand_az + 9.83) * 100) < 3 ? expect = -(grand_az + 9.83) * 100 : 1;
-       
-        h2.Set_ex_feed(expect, (grand_az - 9.82));
-        int hight2_out = (int)h2.PID_Control_Err_LPF();
-        thr = hover_thr + hight2_out;
     }
 }
 
@@ -801,7 +855,8 @@ void out(int *out1, int *out2, int *out3, int *out4)
         pre4 = *out4;
         flag = 1;
     }
-    yrate = (thr - 1000) / 500.0 + 0.2;
+
+    yrate = (thr - 1000) / 500.0 + 0.25;
     yrate = constrain(yrate, 0, 1);
     *out1 = thr + yrate * (-posoutrate[pitch] - posoutrate[yaw] - posoutrate[roll]);
     *out2 = thr + yrate * (-posoutrate[roll] + posoutrate[pitch] + posoutrate[yaw]);
@@ -812,10 +867,15 @@ void out(int *out1, int *out2, int *out3, int *out4)
     *out2 = *out2 * rate + (1 - rate) * pre2;
     *out3 = *out3 * rate + (1 - rate) * pre3;
     *out4 = *out4 * rate + (1 - rate) * pre4;
+    if (Roll_angle > 80 || Pitch_angle > 80)
+    {
+        *out1 = *out2 = *out3 = *out4 = 1000;
+    }
     *out1 = constrain(*out1, 1000, 2000);
     *out2 = constrain(*out2, 1000, 2000);
     *out3 = constrain(*out3, 1000, 2000);
     *out4 = constrain(*out4, 1000, 2000);
+
     // Serial.printf(" out1:  %d  %d  %d  %d \n", *out1, *out2, *out3, *out4);
     pre1 = *out1;
     pre2 = *out2;

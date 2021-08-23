@@ -37,7 +37,7 @@ void led_init(){
     attachInterrupt(BUTTON,interrupt_handle,RISING);
 }
 void fly_handle(){
-     if (altitude-alt_init>3){
+     if (altitude-alt_init>2){
          Landed_flag=0;
          Flying_flag=1;
      }

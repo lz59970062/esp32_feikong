@@ -23,7 +23,56 @@ unsigned short lenth_val = 0;
 unsigned char i2c_rx_buf[16];
 unsigned char dirsend_flag = 0;
 unsigned int TOF_I2Caddress = 82;
+#define NUMBER 6
+void fsort(float *s,int n){
+   int i,j,pos;
+   float tempmin ,temp;
+   for(i=0;i<n;i++){
+      tempmin=s[i];
+      temp=i;
+      for(j=i;j<n;j++){
+        if(s[j]>tempmin){
+            pos=j;
+            tempmin=s[j];
+        }
+      }
+      temp=s[pos];
+      s[pos]=s[i];
+      s[i]=temp;
 
+   }
+}
+#define NUM 16
+float fiter2(float input)
+{
+    static int cnt = 0;
+    static float f[NUM] = {0};
+    float  sum = 0;
+    f[cnt++] = input;
+    if (cnt == 5)
+        cnt = 0;
+    for (int i = 0; i < NUM; i++)
+    {
+        f[i] == 0 ? f[i] = input : 1;
+    }
+    for (int i = 0; i < NUM; i++)
+    {
+        sum+=f[i];
+
+    }
+    return sum/NUM;
+}
+float data_correction(float input){//中值滤波
+    static float last_input[NUMBER]={0};
+    float temp[NUMBER];
+    for (int i=0;i<NUMBER;i++){
+        last_input[i]=last_input[i+1];
+    }
+    last_input[NUMBER-1]=input;
+    memcpy(temp,last_input,NUMBER*sizeof(float));
+    fsort(temp,NUMBER);
+    return temp[NUMBER/2];
+}
 void SensorRead(unsigned char *datbuf, int TOF_I2Caddress)
 {
     unsigned short result = 0;
@@ -55,7 +104,7 @@ int ReadDistance(int TOF_I2Caddress)
 #endif
 
 float alt_init = 0;
-#define LIMIT_DH 1000
+#define LIMIT_DH 2000
 void gethight(float *hight)
 {
     long duration;
@@ -92,7 +141,10 @@ void gethight(float *hight)
         *hight = distance * 0.1;
     else
         *hight = pre_hight;
+    if(*hight>190)
+        *hight = pre_hight;
     pre_hight = *hight;
+    *hight=data_correction(*hight);
 }
 
 void gethigh_init()
@@ -121,24 +173,18 @@ void gethight(float *hight, float *d_value)
 {
     double dt;
     static long pt = 0;
-    
+    static float pre_v;
     float distance;
     static int i = 3;
     static int a[4];
     static float prevalue = alt_init;
+    
+    dt = (millis() - pt) * 0.001;
+    pt = millis();
 #ifdef TOF
     distance = ReadDistance(TOF_I2Caddress);
-    a[i] = distance;
     
-    double sum = 0;
-    sum = a[0] + a[1] + a[2] + a[3];
-    i--;
-    distance = sum *0.25;
-    if (i == -1)
-        i = 3;
-    pt > 0 ? pt : 0;
-    dt = (micros() - pt) * 0.000001;
-    pt = micros();
+   
 #endif
 #ifdef SR
 
@@ -150,11 +196,6 @@ void gethight(float *hight, float *d_value)
     duration = pulseIn(echo, HIGH);
     distance = duration * 0.034 / 2;
 #endif
-    *d_value = (distance - prevalue) / dt; //mm/s
-    *d_value = *d_value * 10;              //cm/s
-    prevalue = distance;
-    *hight = (float)distance * 0.1;
-
 #ifdef PRESS
     if (bmp280.getAltitude(altitude)) // Check if the measurement is complete
     {
@@ -169,6 +210,15 @@ void gethight(float *hight, float *d_value)
         *hight = altitude;
     }
 #endif
+    distance=data_correction(distance)*0.1;
+    *hight = distance;
+    float v = (distance - prevalue) / dt; //mm/s
+    v==0?v=pre_v:1;
+    pre_v=v;
+    v=fiter2(v);
+    *d_value = v * 10;              //cm/s
+    prevalue = distance;
+    
 }
 //1. 结构体类型定义
 
