@@ -13,7 +13,7 @@ extern float ex_roll, ex_pitch, ex_yaw;
 void(* resetFunc) (void) = 0;
 bool inited = 0;
 extern float q0, q1, q2, q3;
-float xoff, yoff, zoff;
+float xoff=-0.4888, yoff=-0.2087, zoff;
 #define g 9.783
 //本地加速度
 #define cyclenumber 20
@@ -135,8 +135,8 @@ void getdata()
     ax = rate * (float)JY901.stcAcc.a[0] / 32768 * 16 * g + (1 - rate) * pax; //m/s*s
     ay = rate * (float)JY901.stcAcc.a[1] / 32768 * 16 * g + (1 - rate) * pay;
     az = rate * (float)JY901.stcAcc.a[2] / 32768 * 16 * g + (1 - rate) * paz;
-    Roll_angle = rate * (float)JY901.stcAngle.Angle[0] / 32768 * 180 + (1 - rate) * pxangle;
-    Pitch_angle = rate * (float)JY901.stcAngle.Angle[1] / 32768 * 180 + (1 - rate) * pyangle;
+    Roll_angle = rate * (float)JY901.stcAngle.Angle[0] / 32768 * 180 + (1 - rate) * pxangle-xoff;
+    Pitch_angle = rate * (float)JY901.stcAngle.Angle[1] / 32768 * 180 + (1 - rate) * pyangle-yoff;
     Yaw_angle = rate * (float)JY901.stcAngle.Angle[2] / 32768 * 180 + (1 - rate) * pzangle;
     gx = rate * (float)JY901.stcGyro.w[0] / 32768 * 2000 + (1 - rate) * pgx;
     gy = rate * (float)JY901.stcGyro.w[1] / 32768 * 2000 + (1 - rate) * pgy;

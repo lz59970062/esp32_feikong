@@ -153,6 +153,7 @@ float ex_roll, ex_pitch, ex_yaw;
 
 k pid;
 
+
 uint8_t fly_flag;
 int lenth = sizeof(k);
 byte buff[sizeof(k)];
@@ -165,7 +166,6 @@ void vTask4(void *pvParameters);
 void task_high(void *pvParameters);
 void task_led(void *pvParameters);
 //void task_hpos(void *pvParameters);
-void tadk_high_acc(void *pvParameters);
 
 //wifi在core0，其他在core1；1为大核
 void setup()
@@ -178,15 +178,15 @@ void setup()
   EEPROM.begin(lenth + 1);
   gethigh_init();
   ({ do { if (__builtin_constant_p(!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC)) && !(!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC))) { extern __attribute__((error("(Cannot use WRITE_PERI_REG for DPORT registers use DPORT_WRITE_PERI_REG)"))) void failed_compile_time_assert(void); failed_compile_time_assert(); } (("(Cannot use WRITE_PERI_REG for DPORT registers use DPORT_WRITE_PERI_REG)" && (!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC))) ? (void)0 : __assert_func ("e:\\飞总\\电赛\\电赛\\main.ino", 50, __PRETTY_FUNCTION__, "\"(Cannot use WRITE_PERI_REG for DPORT registers use DPORT_WRITE_PERI_REG)\" && (!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC))")); } while(0);; (*((volatile uint32_t *)((0x3ff48000 + 0xd4)))) = (uint32_t)(0); }); //关闭低电压检测,避免无限重启
-  xTaskCreatePinnedToCore(Task1, "Task1",10000, 
+  xTaskCreatePinnedToCore(Task1, "Task1", 15000, 
 # 51 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                               __null
+                                                __null
 # 51 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                   , 2, 
+                                                    , 2, 
 # 51 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                                        __null
+                                                         __null
 # 51 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                            , 0); //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+                                                             , 0); //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
   xTaskCreatePinnedToCore(Task2, "Task2", 10000, 
 # 52 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
                                                 __null
@@ -196,15 +196,15 @@ void setup()
                                                          __null
 # 52 "e:\\飞总\\电赛\\电赛\\main.ino"
                                                              , 1);
-  xTaskCreatePinnedToCore(vTask3, "rate", 10000, 
+  xTaskCreatePinnedToCore(vTask3, "rate", 7000, 
 # 53 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                                __null
+                                               __null
 # 53 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                    , 1, 
+                                                   , 1, 
 # 53 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                                         __null
+                                                        __null
 # 53 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                             , 1);
+                                                            , 1);
   xTaskCreatePinnedToCore(vTask4, "pos", 10000, 
 # 54 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
                                                __null
@@ -214,15 +214,15 @@ void setup()
                                                         __null
 # 54 "e:\\飞总\\电赛\\电赛\\main.ino"
                                                             , 1);
-  xTaskCreatePinnedToCore(task_high, "high_pid", 10000, 
+  xTaskCreatePinnedToCore(task_high, "high_pid",20000, 
 # 55 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                                       __null
+                                                      __null
 # 55 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                           , 1, 
+                                                          , 1, 
 # 55 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                                                __null
+                                                               __null
 # 55 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                                    , 1);
+                                                                   , 1);
   xTaskCreatePinnedToCore(task_led, "led_blink", 1024, 
 # 56 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
                                                       __null
@@ -232,22 +232,12 @@ void setup()
                                                                __null
 # 56 "e:\\飞总\\电赛\\电赛\\main.ino"
                                                                    , 0);
-  xTaskCreatePinnedToCore(task_high_acc, "high_acc", 10000, 
-# 57 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                                           __null
-# 57 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                               , 1, 
-# 57 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                                                    __null
-# 57 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                                        , 1);
   //vTaskStartScheduler();
   //实现任务的函数名称（task1）；任务的任何名称（“ task1”等）；分配给任务的堆栈大小，以字为单位；任务输入参数（可以为NULL）；任务的优先级（0是最低优先级）；任务句柄（可以为NULL）；任务将运行的内核ID（0或1）
 }
 
 void loop()
 {
-
 }
 
 void Task1(void *pvParameters)
@@ -263,7 +253,7 @@ void Task1(void *pvParameters)
   Serial.println("start");
   //在这里可以添加一些代码，这样的话这个任务执行时会先执行一次这里的内容（当然后面进入while循环之后不会再执行这部分了）
   EEPROM.readBytes(0, buff, lenth);
-  uint16_t hposcnt=0;
+  uint16_t hposcnt = 0;
   esc_write(1000, 1000, 1000, 1000);
   delay(1);
   while (1)
@@ -281,7 +271,7 @@ void Task1(void *pvParameters)
       EEPROM.writeBytes(0, buff, lenth);
       EEPROM.commit();
       ifreaded = 1;
-      Reset_pose_i();//清空积分项
+      Reset_pose_i(); //清空积分项
     }
     if (ifreaded)
     {
@@ -290,9 +280,9 @@ void Task1(void *pvParameters)
       copy(pid);
       ifreaded = 0;
     }
-    gethight(&raw_altitude,&v_hight);
+    gethight(&raw_altitude, &v_hight);
     //vTaskDelay(1);
-    altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180);//////高度修正存在问题！！！！！！！！！！！！！
+    altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180); //////高度修正存在问题！！！！！！！！！！！！！
     //altitude = kalmanFilter(&KFP_height, raw_altitude);
     //Serial.printf("%f   %f    %f     \n",pid.p1[0],pid.p2[1],pid.i1[2]);
     //////////////////////////////////read sensor///////////////////////////////
@@ -302,9 +292,11 @@ void Task1(void *pvParameters)
     getdata();
 
     hposcnt++;
-    if (hposcnt%25==0) opt_co();//25毫秒执行一次//////光流pid异常
-    if(hposcnt==75) {
-      hposcnt=0;
+    if (hposcnt % 25 == 0)
+      opt_co(); //25毫秒执行一次//////光流pid异常
+    if (hposcnt == 75)
+    {
+      hposcnt = 0;
       opt_get();
     }
     //Serial.printf("%.7f,\n",grand_az);
@@ -367,7 +359,6 @@ void vTask3(void *pvParameters)
 
   for (;;)
   {
-
     //等待下一个周期
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
     rate_pid();
@@ -390,14 +381,14 @@ void vTask4(void *pvParameters)
     if (!flag)
     {
       uxPriority = uxTaskPriorityGet(
-# 206 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 205 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
                                     __null
-# 206 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 205 "e:\\飞总\\电赛\\电赛\\main.ino"
                                         );
       vTaskPrioritySet(
-# 207 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 206 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
                       __null
-# 207 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 206 "e:\\飞总\\电赛\\电赛\\main.ino"
                           , (uxPriority - 2));
       flag = 1;
     }
@@ -405,6 +396,7 @@ void vTask4(void *pvParameters)
     //等待下一个周期
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
     posturepid();
+    //Serial.printf("%f   %f\n",Roll_angle,Pitch_angle);
     digitalWrite(15, state);
     state = !state;
 
@@ -415,30 +407,28 @@ void vTask4(void *pvParameters)
 void task_high(void *pvParameters)
 {
   static TickType_t xLastWakeTime;
-  const TickType_t xFrequency = 10;
+  const TickType_t xFrequency = 2;
+  uint16_t cnt = 0;
   // 使用当前时间初始化变量xLastWakeTime
   xLastWakeTime = xTaskGetTickCount();
   for (;;)
   {
     //等待下一个周期
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
-    heightcontrol();
-    // 需要周期性执行代码放在这里
-  }
-}
-void task_high_acc(void *pvParameters)
-{
-  static TickType_t xLastWakeTime;
-  const TickType_t xFrequency = 3;
-  // 使用当前时间初始化变量xLastWakeTime
-  xLastWakeTime = xTaskGetTickCount();
-  for (;;)
-  {
-    //等待下一个周期
-    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    //Serial.printf("running");
+    //Serial.println(cnt);
+    if (cnt % 6 == 0)
+      heightcontrol();
+    if (cnt % 2 == 0)
+      hight_v();
+  /*   if (cnt % 2 == 0)
 
-    hight_acc();
-    // 需要周期性执行代码放在这里
+      {hight_acc();}  */
+# 240 "e:\\飞总\\电赛\\电赛\\main.ino"
+    if (cnt++ == 120)
+      cnt = 0;
+
+    //Serial.printf("%f ,%f ,%f ,%d ,%f ,%f\n", expect_h, altitude, grand_az, hight1_out, h2.Control_OutPut, h3.Control_OutPut);
   }
 }
 
@@ -451,7 +441,6 @@ void task_led(void *pvParameters)
   short led_flag;
   while (1)
   {
-
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
     if (fly_flag == 2)
       digitalWrite(27, 1);

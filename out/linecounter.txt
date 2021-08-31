@@ -2,21 +2,24 @@
 EXTENSION NAME : linecounter
 EXTENSION VERSION : 0.2.7
 -------------------------------------------------------------------------------
-count time : 2021-08-09 22:49:36
+count time : 2021-08-27 15:32:22
 count workspace : e:\飞总\电赛\电赛
-total files : 35
-total code lines : 1661
-total comment lines : 442
-total blank lines : 197
+total files : 163
+total code lines : 10073
+total comment lines : 919
+total blank lines : 413
 
     statistics
    |      extension|     total code|  total comment|    total blank|percent|
    -------------------------------------------------------------------------
-   |               |              0|              0|              0|    0.0|
-   |             .h|            282|             39|             23|     17|
-   |           .cpp|           1192|            314|            143|     72|
-   |           .ino|            178|             89|             30|     11|
-   |          .json|              9|              0|              1|   0.54|
+   |           .cpp|           3202|            768|            342|     32|
+   |             .h|            568|             78|             46|    5.6|
+   |            .md|              2|              0|              0|  0.020|
+   |           .ino|            188|             73|             24|    1.9|
+   |          .json|             21|              0|              1|   0.21|
+   |         .cache|            107|              0|              0|    1.1|
+   |             .d|           5979|              0|              0|     59|
+   |           .csv|              6|              0|              0|  0.060|
    -------------------------------------------------------------------------
 .vs\ProjectSettings.json, code is 3, comment is 0, blank is 0.
 .vs\slnx.sqlite, it is a binary file.
@@ -34,23 +37,151 @@ total blank lines : 197
 .vs\飞控\v16\ipch\AutoPCH\a19636c5a54a9c7c\RF24.ipch, it is a binary file.
 .vs\飞控\v16\ipch\AutoPCH\abe75ab32231ff61\LED.ipch, it is a binary file.
 .vs\飞控\v16\ipch\AutoPCH\ad66446de3ef82da\VOLTAGE.ipch, it is a binary file.
+built\build.options.json, code is 12, comment is 0, blank is 0.
+built\core\base64.cpp.d, code is 137, comment is 0, blank is 0.
+built\core\base64.cpp.o, it is a binary file.
+built\core\cbuf.cpp.d, code is 20, comment is 0, blank is 0.
+built\core\cbuf.cpp.o, it is a binary file.
+built\core\core.a, it is a binary file.
+built\core\Esp.cpp.d, code is 144, comment is 0, blank is 0.
+built\core\Esp.cpp.o, it is a binary file.
+built\core\esp32-hal-adc.c.d, code is 113, comment is 0, blank is 0.
+built\core\esp32-hal-adc.c.o, it is a binary file.
+built\core\esp32-hal-bt.c.d, code is 110, comment is 0, blank is 0.
+built\core\esp32-hal-bt.c.o, it is a binary file.
+built\core\esp32-hal-cpu.c.d, code is 119, comment is 0, blank is 0.
+built\core\esp32-hal-cpu.c.o, it is a binary file.
+built\core\esp32-hal-dac.c.d, code is 110, comment is 0, blank is 0.
+built\core\esp32-hal-dac.c.o, it is a binary file.
+built\core\esp32-hal-gpio.c.d, code is 112, comment is 0, blank is 0.
+built\core\esp32-hal-gpio.c.o, it is a binary file.
+built\core\esp32-hal-i2c.c.d, code is 118, comment is 0, blank is 0.
+built\core\esp32-hal-i2c.c.o, it is a binary file.
+built\core\esp32-hal-ledc.c.d, code is 116, comment is 0, blank is 0.
+built\core\esp32-hal-ledc.c.o, it is a binary file.
+built\core\esp32-hal-log.c.d, code is 30, comment is 0, blank is 0.
+built\core\esp32-hal-log.c.o, it is a binary file.
+built\core\esp32-hal-matrix.c.d, code is 107, comment is 0, blank is 0.
+built\core\esp32-hal-matrix.c.o, it is a binary file.
+built\core\esp32-hal-misc.c.d, code is 123, comment is 0, blank is 0.
+built\core\esp32-hal-misc.c.o, it is a binary file.
+built\core\esp32-hal-psram.c.d, code is 107, comment is 0, blank is 0.
+built\core\esp32-hal-psram.c.o, it is a binary file.
+built\core\esp32-hal-rmt.c.d, code is 117, comment is 0, blank is 0.
+built\core\esp32-hal-rmt.c.o, it is a binary file.
+built\core\esp32-hal-sigmadelta.c.d, code is 112, comment is 0, blank is 0.
+built\core\esp32-hal-sigmadelta.c.o, it is a binary file.
+built\core\esp32-hal-spi.c.d, code is 117, comment is 0, blank is 0.
+built\core\esp32-hal-spi.c.o, it is a binary file.
+built\core\esp32-hal-time.c.d, code is 147, comment is 0, blank is 0.
+built\core\esp32-hal-time.c.o, it is a binary file.
+built\core\esp32-hal-timer.c.d, code is 113, comment is 0, blank is 0.
+built\core\esp32-hal-timer.c.o, it is a binary file.
+built\core\esp32-hal-touch.c.d, code is 110, comment is 0, blank is 0.
+built\core\esp32-hal-touch.c.o, it is a binary file.
+built\core\esp32-hal-uart.c.d, code is 120, comment is 0, blank is 0.
+built\core\esp32-hal-uart.c.o, it is a binary file.
+built\core\FunctionalInterrupt.cpp.d, code is 117, comment is 0, blank is 0.
+built\core\FunctionalInterrupt.cpp.o, it is a binary file.
+built\core\HardwareSerial.cpp.d, code is 115, comment is 0, blank is 0.
+built\core\HardwareSerial.cpp.o, it is a binary file.
+built\core\IPAddress.cpp.d, code is 134, comment is 0, blank is 0.
+built\core\IPAddress.cpp.o, it is a binary file.
+built\core\IPv6Address.cpp.d, code is 135, comment is 0, blank is 0.
+built\core\IPv6Address.cpp.o, it is a binary file.
+built\core\libb64\cdecode.c.d, code is 7, comment is 0, blank is 0.
+built\core\libb64\cdecode.c.o, it is a binary file.
+built\core\libb64\cencode.c.d, code is 3, comment is 0, blank is 0.
+built\core\libb64\cencode.c.o, it is a binary file.
+built\core\main.cpp.d, code is 135, comment is 0, blank is 0.
+built\core\main.cpp.o, it is a binary file.
+built\core\MD5Builder.cpp.d, code is 135, comment is 0, blank is 0.
+built\core\MD5Builder.cpp.o, it is a binary file.
+built\core\Print.cpp.d, code is 134, comment is 0, blank is 0.
+built\core\Print.cpp.o, it is a binary file.
+built\core\stdlib_noniso.c.d, code is 24, comment is 0, blank is 0.
+built\core\stdlib_noniso.c.o, it is a binary file.
+built\core\Stream.cpp.d, code is 134, comment is 0, blank is 0.
+built\core\Stream.cpp.o, it is a binary file.
+built\core\StreamString.cpp.d, code is 134, comment is 0, blank is 0.
+built\core\StreamString.cpp.o, it is a binary file.
+built\core\wiring_pulse.c.d, code is 116, comment is 0, blank is 0.
+built\core\wiring_pulse.c.o, it is a binary file.
+built\core\wiring_shift.c.d, code is 116, comment is 0, blank is 0.
+built\core\wiring_shift.c.o, it is a binary file.
+built\core\WMath.cpp.d, code is 64, comment is 0, blank is 0.
+built\core\WMath.cpp.o, it is a binary file.
+built\core\WString.cpp.d, code is 135, comment is 0, blank is 0.
+built\core\WString.cpp.o, it is a binary file.
+built\includes.cache, code is 107, comment is 0, blank is 0.
+built\JY901.cpp.bin, it is a binary file.
+built\JY901.cpp.elf, it is a binary file.
+built\JY901.cpp.partitions.bin, it is a binary file.
+built\libraries\arduino-px4flow-i2c-master\PX4Flow.cpp.d, code is 137, comment is 0, blank is 0.
+built\libraries\arduino-px4flow-i2c-master\PX4Flow.cpp.o, it is a binary file.
+built\libraries\EEPROM\EEPROM.cpp.d, code is 135, comment is 0, blank is 0.
+built\libraries\EEPROM\EEPROM.cpp.o, it is a binary file.
+built\libraries\ESP32Servo\analogWrite.cpp.d, code is 132, comment is 0, blank is 0.
+built\libraries\ESP32Servo\analogWrite.cpp.o, it is a binary file.
+built\libraries\ESP32Servo\ESP32PWM.cpp.d, code is 135, comment is 0, blank is 0.
+built\libraries\ESP32Servo\ESP32PWM.cpp.o, it is a binary file.
+built\libraries\ESP32Servo\ESP32Servo.cpp.d, code is 134, comment is 0, blank is 0.
+built\libraries\ESP32Servo\ESP32Servo.cpp.o, it is a binary file.
+built\libraries\ESP32Servo\ESP32Tone.cpp.d, code is 136, comment is 0, blank is 0.
+built\libraries\ESP32Servo\ESP32Tone.cpp.o, it is a binary file.
+built\libraries\Wire\Wire.cpp.d, code is 138, comment is 0, blank is 0.
+built\libraries\Wire\Wire.cpp.o, it is a binary file.
+built\partitions.csv, code is 6, comment is 0, blank is 0.
+built\preproc\ctags_target_for_gcc_minus_e.cpp, code is 362, comment is 95, blank is 36.
+built\sketch\escout.cpp, code is 14, comment is 2, blank is 1.
+built\sketch\escout.cpp.d, code is 134, comment is 0, blank is 0.
+built\sketch\escout.cpp.o, it is a binary file.
+built\sketch\escout.h, code is 2, comment is 0, blank is 0.
+built\sketch\gethight.cpp, code is 208, comment is 43, blank is 20.
+built\sketch\gethight.cpp.d, code is 136, comment is 0, blank is 0.
+built\sketch\gethight.cpp.o, it is a binary file.
+built\sketch\gethight.h, code is 16, comment is 7, blank is 3.
+built\sketch\imu.cpp, code is 190, comment is 12, blank is 13.
+built\sketch\imu.cpp.d, code is 138, comment is 0, blank is 0.
+built\sketch\imu.cpp.o, it is a binary file.
+built\sketch\imu.h, code is 4, comment is 0, blank is 1.
+built\sketch\JY901.cpp.cpp, code is 316, comment is 77, blank is 32.
+built\sketch\JY901.cpp.cpp.d, code is 145, comment is 0, blank is 0.
+built\sketch\JY901.cpp.cpp.o, it is a binary file.
+built\sketch\JY901.h, code is 167, comment is 0, blank is 8.
+built\sketch\optical_flow.cpp, code is 88, comment is 16, blank is 8.
+built\sketch\optical_flow.cpp.d, code is 139, comment is 0, blank is 0.
+built\sketch\optical_flow.cpp.o, it is a binary file.
+built\sketch\optical_flow.h, code is 3, comment is 0, blank is 0.
+built\sketch\pid.cpp, code is 638, comment is 221, blank is 81.
+built\sketch\pid.cpp.d, code is 133, comment is 0, blank is 0.
+built\sketch\pid.cpp.o, it is a binary file.
+built\sketch\pid.h, code is 82, comment is 32, blank is 10.
+built\sketch\state_handle.cpp, code is 46, comment is 2, blank is 9.
+built\sketch\state_handle.cpp.d, code is 133, comment is 0, blank is 0.
+built\sketch\state_handle.cpp.o, it is a binary file.
+built\sketch\state_handle.h, code is 4, comment is 0, blank is 0.
+built\sketch\voltage.cpp, code is 18, comment is 0, blank is 1.
+built\sketch\voltage.cpp.d, code is 134, comment is 0, blank is 0.
+built\sketch\voltage.cpp.o, it is a binary file.
+built\sketch\voltage.h, code is 6, comment is 0, blank is 1.
 escout.cpp, code is 14, comment is 2, blank is 1.
 escout.h, code is 2, comment is 0, blank is 0.
-gethight.cpp, code is 160, comment is 42, blank is 18.
+gethight.cpp, code is 208, comment is 43, blank is 20.
 gethight.h, code is 16, comment is 7, blank is 3.
-imu.cpp, code is 164, comment is 12, blank is 17.
+imu.cpp, code is 190, comment is 12, blank is 13.
 imu.h, code is 4, comment is 0, blank is 1.
 JY901.cpp, code is 120, comment is 4, blank is 8.
 JY901.h, code is 167, comment is 0, blank is 8.
-main.ino, code is 178, comment is 89, blank is 30.
-optical_flow.cpp, code is 82, comment is 16, blank is 9.
+main.ino, code is 188, comment is 73, blank is 24.
+optical_flow.cpp, code is 88, comment is 16, blank is 8.
 optical_flow.h, code is 3, comment is 0, blank is 0.
-pid.cpp, code is 588, comment is 236, blank is 80.
-pid.h, code is 80, comment is 32, blank is 10.
+pid.cpp, code is 638, comment is 221, blank is 81.
+pid.h, code is 82, comment is 32, blank is 10.
+README.md, code is 2, comment is 0, blank is 0.
 state_handle.cpp, code is 46, comment is 2, blank is 9.
 state_handle.h, code is 4, comment is 0, blank is 0.
 voltage.cpp, code is 18, comment is 0, blank is 1.
 voltage.h, code is 6, comment is 0, blank is 1.
 四旋翼飞行器电路原理图\四旋翼飞行器电路原理图.png, it is a binary file.
-电赛, code is 0, comment is 0, blank is 0.
 ===============================================================================

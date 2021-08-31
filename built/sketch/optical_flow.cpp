@@ -42,7 +42,7 @@ void opt_get()
         // (flow/1000) * (ground_distance/1000) / (timespan/1000000)
         velocity_x = (float)pixel_x * altitude * 10 / timespan; // m/s
         velocity_y = (float)pixel_y * altitude * 10 / timespan; // m/s
-        //Serial.printf("%f,%f",velocity_x,velocity_y);
+        
         //Serial.printf("%f,%f\n", velocity_x, velocity_y);
         // Integrate velocity to get pose estimate
     }
@@ -61,13 +61,13 @@ void opt_co()
         hposx.Set_errormax(1);
         hposx.Set_i_error(2);
         hposx.Set_i_mode(1, 1, 1);
-        hposx.Set_Cutoff_Frequency(20, 5, &hposx.Control_Device_Div_LPF_Parameter);
+        hposx.Set_Cutoff_Frequency(20, 5, &hposx.Control_Device_Err_LPF_Parameter);
         hposx.Control_OutPut_Limit = 3;
         hposx.Integrate_Separation_Err = 2;
         hposy.Set_errormax(1);
         hposy.Set_i_error(2);
         hposy.Set_i_mode(1, 1, 1);
-        hposy.Set_Cutoff_Frequency(20, 5, &hposy.Control_Device_Div_LPF_Parameter);
+        hposy.Set_Cutoff_Frequency(20, 5, &hposy.Control_Device_Err_LPF_Parameter);
         hposy.Control_OutPut_Limit = 3;
         hposy.Integrate_Separation_Err = 2;
         initflag = 1;
@@ -79,25 +79,27 @@ void opt_co()
         posepid.evx = velocity_x;
     if (fabs(posepid.evy - velocity_y) < 0.2)
         posepid.evy = velocity_y;
-    hposx.Set_ex_feed(posepid.evx, velocity_y);
-    hposy.Set_ex_feed(posepid.evy, velocity_x);
+    hposx.Set_ex_feed(posepid.evx, velocity_x);
+    hposy.Set_ex_feed(posepid.evy, velocity_y);
     hposx.Set_pid(posepid.xp, posepid.xi, posepid.xd);
     hposy.Set_pid(posepid.yp, posepid.yi, posepid.yd);
     if (posepid.state[0])
     {   yout=0;
         xout = 0;
-
     }
     else if (quality >100)
     {
-        xout = hposx.PID_Control_Div_LPF();
-        yout = hposy.PID_Control_Div_LPF();
+        xout = hposx.PID_Control_Err_LPF();
+        yout = hposy.PID_Control_Err_LPF();
+        if(posepid.state[2]) Serial.printf("%f,%f\n",velocity_x,xout);
+        if(posepid.state[3]) Serial.printf("%f,%f\n",velocity_y,-yout);
+        //Serial.printf("%f                %f\n",xout,yout);
     }
     else
     {
         xout = 0;
         yout = 0;
     }
-    posepid.expect[roll] = -xout;
-    posepid.expect[pitch] = yout;
+    posepid.expect[roll] = xout;
+    posepid.expect[pitch] = -yout;
 }

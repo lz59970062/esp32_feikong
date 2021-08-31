@@ -17,7 +17,7 @@ extern float expect_h;
 extern bool inited;
 bool stable = 0;
 float xout, yout;
-int hover_thr = 0;
+int hover_thr = 1350;
 #ifndef M_PI_F
 #define M_PI_F 3.141592653589793f
 #endif
@@ -93,7 +93,7 @@ int thr = 1300;
 typedef struct
 {
     float p1[3], i1[3], d1[3], p2[3], i2[3], d2[3];
-    float p[2], i[2], d[2];
+    float p[3], i[3], d[3];
     float expect[3];
     float ex_h;
     float evx, xp, xi, xd;
@@ -303,28 +303,20 @@ void rate_pid()
     prerror2.pre[pitch] = poserror.error2[pitch];
     posoutrate[pitch] = constrain(posout2[pitch].op + posout2[pitch].oi + posout2[pitch].od, -500, 500);
 
-    if (Flying_flag)
-    {
-        posout2[yaw].op = posepid.p2[yaw] * poserror.error2[yaw];
-        posout2[yaw].oi += ki_process(posepid.i2[yaw], poserror.error2[yaw], 300) * poserror.error2[yaw] * dt;
-        posout2[yaw].oi = constrain(posout2[yaw].oi, -200, 200);
-        posout2[yaw].od = posepid.d2[yaw] * (poserror.error2[yaw] - prerror2.pre[yaw]) / dt;
-        prerror2.pre[yaw] = poserror.error2[yaw];
-        posoutrate[yaw] = constrain(posout2[yaw].op + posout2[yaw].oi + posout2[yaw].od, -500, 500);
-    }
-
-    else
-    {
-        posoutrate[yaw] = 0;
-    }
+    posout2[yaw].op = posepid.p2[yaw] * poserror.error2[yaw];
+    posout2[yaw].oi += ki_process(posepid.i2[yaw], poserror.error2[yaw], 300) * poserror.error2[yaw] * dt;
+    posout2[yaw].oi = constrain(posout2[yaw].oi, -200, 200);
+    posout2[yaw].od = posepid.d2[yaw] * (poserror.error2[yaw] - prerror2.pre[yaw]) / dt;
+    prerror2.pre[yaw] = poserror.error2[yaw];
+    posoutrate[yaw] = constrain(posout2[yaw].op + posout2[yaw].oi + posout2[yaw].od, -500, 500);
 }
 void Reset_pose_i()
 {
     if (posepid.state[1])
     {
         posout2[yaw].oi = posout2[roll].oi = posout2[pitch].oi = posout1[yaw].oi = posout1[roll].oi = posout1[pitch].oi = 0;
-        thr = 1250;
-        hover_thr = 1000;
+        thr = 1350;
+        hover_thr = 1350;
     }
 }
 #ifdef Debug
@@ -385,6 +377,7 @@ public:
     float Dis_Err_LPF;
     float Last_Dis_Err_LPF;
     float Pre_Last_Dis_Err_LPF;
+    Butter_Parameter Control_Device_Err_LPF_Parameter;
     Butter_Parameter Control_Device_Div_LPF_Parameter;
     Butter_BufferData Control_Device_LPF_Buffer; //控制器低通输入输出缓冲
     Testime PID_Controller_Dt;                   //前面有Testime结构体的定义
@@ -460,14 +453,13 @@ float PID::PID_Control_Div_LPF()
 {
 
     float tempa, tempb, tempc, max, min; //用于防跳变滤波
-    float controller_dt = 0;
-    Butter_Parameter Control_Device_Div_LPF_Parameter;
+    double controller_dt = 0;
+
     PID_Controller_Dt.Now_Time = micros();
     PID_Controller_Dt.Time_Delta = PID_Controller_Dt.Now_Time - PID_Controller_Dt.Last_Time;
     PID_Controller_Dt.Last_Time = PID_Controller_Dt.Now_Time;
     controller_dt = PID_Controller_Dt.Time_Delta * 0.000001f;
-    if (controller_dt < 0.0005f)
-        return 0;
+
     /*******偏差计算*********************/
     Last_Err = Err;           //保存上次偏差
     Err = Expect - FeedBack;  //期望减去反馈得到偏差
@@ -526,11 +518,11 @@ float PID::PID_Control_Div_LPF()
             Integrate = -Integrate_Max;
     }
     /*******×ÜÊä³ö¼ÆËã*********************/
-    Last_Control_OutPut = Control_OutPut;         //Êä³öÖµµÝÍÆ
-    Control_OutPut = Kp * Err                     //±ÈÀý
-                     + Integrate                  //»ý·Ö
-                                                  //+Controler->Kd*Controler->Dis_Err;//Î¢·Ö
-                     + Kd * Dis_Error_History[0]; //Î¢·ÖÏîÀ´Ô´ÓÚ°ÍÌØÎÖË¹µÍÍ¨ÂË²¨Æ÷
+    Last_Control_OutPut = Control_OutPut;                         //Êä³öÖµµÝÍÆ
+    Control_OutPut = Kp * Err                                     //±ÈÀý
+                     + Integrate                                  //»ý·Ö
+                                                                  //+Controler->Kd*Controler->Dis_Err;//Î¢·Ö
+                     + Kd * Dis_Error_History[0] / controller_dt; //Î¢·ÖÏîÀ´Ô´ÓÚ°ÍÌØÎÖË¹µÍÍ¨ÂË²¨Æ÷
     /*******×ÜÊä³öÏÞ·ù*********************/
 
     Control_OutPut = constrain(Control_OutPut, -Control_OutPut_Limit, Control_OutPut_Limit);
@@ -541,25 +533,25 @@ float PID::PID_Control_Div_LPF()
 float PID::PID_Control_Err_LPF()
 {
     float controller_dt = 0;
-    Butter_Parameter Control_Device_Err_LPF_Parameter;
+
     PID_Controller_Dt.Now_Time = micros();
     PID_Controller_Dt.Time_Delta = PID_Controller_Dt.Now_Time - PID_Controller_Dt.Last_Time;
     PID_Controller_Dt.Last_Time = PID_Controller_Dt.Now_Time;
     controller_dt = PID_Controller_Dt.Time_Delta * 0.000001f;
-    if (controller_dt < 0.0005f)
-        return 0;
+
     /*******偏差计算*********************/
     Last_Err = Err;           //保存上次偏差
     Err = Expect - FeedBack;  //期望值减去反馈得到偏差
     Dis_Err = Err - Last_Err; //原始微分
-
+    //Serial.println(Err);
     Last_Err_LPF = Err_LPF;
+
     Err_LPF = Control_Device_LPF(Err,
                                  &Control_Device_LPF_Buffer,
-                                 &Control_Device_Err_LPF_Parameter); //°ÍÌØÎÖË¹µÍÍ¨ºóµÃµ½µÄÎ¢·ÖÏî,20hz
+                                 &Control_Device_Err_LPF_Parameter); ///°ÍÌØÎÖË¹µÍÍ¨ºóµÃµ½µÄÎ¢·ÖÏî,20hz
 
     Dis_Err_LPF = Err_LPF - Last_Err_LPF; //偏差经过低通后的微分量
-
+    //Serial.println(Err_LPF);
     if (Err_Limit_Flag == 1) //偏差限幅度标志位
     {
         if (Err_LPF >= Err_Max)
@@ -739,101 +731,118 @@ void hover_get(float expect)
 }
 PID h1;
 PID h2;
+PID h3;
 int hight1_out = 0;
+int hight2_out = 0;
+int hight3_out = 0;
 void heightcontrol()
 {
-
     static bool initflag = 0;
     static uint32_t cnt1 = 0, cnt2 = 0;
-
+    //
     if (Start_flag)
     {
-
-        if (Landed_flag == 1)
+        /* if (Landed_flag == 1)
         {
-
             cnt1++;
             if (cnt1 % 4 == 0)
             {
-
                 thr++;
                 hover_thr = thr;
             }
             return;
-        }
-        if (Landing_flag)
-        {
-            cnt2++;
-            if (cnt2 % 5 == 0)
-            {
-                thr--;
-                if (thr == 1250)
-                {
-                    Landed_flag = 1;
-                    Landing_flag = 0;
-                    Flying_flag = 0;
-                    cnt2 = 0;
-                }
-            }
-            return;
-        }
-        if (Flying_flag && !Landed_flag)
+        } */
+
+        //if (Flying_flag && !Landed_flag)
         {
             cnt1 = 0;
-
             if (!initflag)
             {
                 h1.Set_errormax(20);
-                h1.Set_i_error(170);
+                h1.Set_i_error(40);
                 h1.Set_i_mode(0, 1, 1);
-                h1.Set_Cutoff_Frequency(100, 20, &h1.Control_Device_Div_LPF_Parameter);
+                h1.Set_Cutoff_Frequency(100, 20, &h1.Control_Device_Err_LPF_Parameter);
                 h1.Integrate_Separation_Err = 20;
                 h1.Control_OutPut_Limit = 300;
                 initflag = 1;
             }
             ////////////////////////////////////////////////////////////////////////
             expect_h = posepid.ex_h;
-            hover_get(expect_h);
+            // hover_get(expect_h);
             if (fabs(expect_h - altitude) < 1)
                 expect_h = altitude;
-            float ki = ki_process(posepid.i[0], expect_h - altitude, 20);
-            h1.Set_pid(posepid.p[0], ki, posepid.d[0]);
+            // Serial.printf("%f  %ld\n",h1.Err,micros());
+
+            //float ki = ki_process(posepid.i[0], expect_h - altitude, 20);
+            h1.Set_pid(posepid.p[0], posepid.i[0], posepid.d[0]);
             h1.Set_ex_feed(expect_h, altitude);
-            hight1_out = (int)h1.PID_Control_Div_LPF();
+            hight1_out = (int)h1.PID_Control_Err_LPF();
             //Serial.println(hight1_out);
-            // thr = hover_thr + hight1_out;
         }
     }
-    Serial.printf("%f,%f,%f,%d,%f\n",expect_h,altitude,grand_az,hight1_out,h2.Control_OutPut);
+    if (posepid.state[1])
+        Serial.printf("%f,%f\n", expect_h, altitude);
 }
+void hight_v()
+{
+    static bool initflag = false;
+    //Serial.printf("hight_v %f\n",v_hight*0.1);
+    //Serial.printf("%f ,%f ,%f ,%d ,%f ,%f\n",posepid.ex_h, altitude, grand_az, hight1_out, h2.Control_OutPut, h3.Control_OutPut);
+    if (Start_flag)
+    {
+        // if (Flying_flag && !Landed_flag)
+        {
+            if (!initflag)
+            {
+                h2.Set_i_error(400);
+                h2.Set_i_mode(0, 1, 1);
+                h2.Set_Cutoff_Frequency(200, 20, &h2.Control_Device_Err_LPF_Parameter);
+                h2.Control_OutPut_Limit = 400;
+                h2.Integrate_Separation_Err = 200;
+                initflag = 1;
+            }
+            //Serial.printf("%d   %f \n",hight1_out,v_hight*0.01);
+            //Serial.printf("%f  %ld\n",v_hight,micros());
+            float expect = hight1_out;
+            //Serial.printf("%f  %ld\n",h2.Err,micros());
+            h2.Set_pid(posepid.p[1], posepid.i[1], posepid.d[1]);
+            fabs(expect - v_hight * 0.01) < 1 ? expect = v_hight * 0.01 : 1;
 
+            h2.Set_ex_feed(expect, v_hight * 0.01);
+            hight2_out = (int)h2.PID_Control_Err_LPF();
+
+            thr = hover_thr + hight2_out;
+            //Serial.printf("%d %f \n",hight2_out,v_hight*0.01);
+        }
+    }
+}
 
 void hight_acc()
 {
     static bool initflag = 0;
     //Serial.println(grand_az);
+
     if (Start_flag)
     {
         if (Flying_flag && !Landed_flag)
         {
             if (!initflag)
             {
-                
-                h2.Set_i_error(400);
-                h2.Set_i_mode(0, 1, 1);
-                h2.Set_Cutoff_Frequency(200, 20, &h2.Control_Device_Div_LPF_Parameter);
-                h2.Control_OutPut_Limit = 400;
-                h2.Integrate_Separation_Err = 500;
+                h3.Set_i_error(400);
+                h3.Set_i_mode(0, 1, 1);
+                h3.Set_Cutoff_Frequency(250, 50, &h3.Control_Device_Err_LPF_Parameter);
+                h3.Control_OutPut_Limit = 500;
                 initflag = 1;
             }
-            float expect = hight1_out;
+            float expect = hight2_out;
 
-            h2.Set_pid(posepid.p[1], posepid.i[1], posepid.d[1]);
-
-            fabs(expect -v_hight*0.1) < 30 ? expect = v_hight*0.1 : 1;
-            h2.Set_ex_feed(expect, v_hight*0.1);
-            int hight2_out = (int)h2.PID_Control_Err_LPF();
-            thr = hover_thr + hight2_out-20;
+            h3.Set_pid(posepid.p[2], posepid.i[2], posepid.d[2]);
+            //fabs(expect - hight2_out < 1) ? expect = hight2_out : 1;
+            h3.Set_ex_feed(expect * 0.1, grand_az);
+            hight3_out = (int)h3.PID_Control_Err_LPF();
+            //hight3_out += (int)((hover_thr + h3.Integrate - 1000) * ((float)expect / 843.8));
+            //Serial.printf("%d %f \n",hight3_out,grand_az);
+            thr = hover_thr + hight3_out;
         }
     }
 }
@@ -841,7 +850,6 @@ void hight_acc()
 //将pid输出量分配到四个电机
 void out(int *out1, int *out2, int *out3, int *out4)
 {
-
     static int pre1, pre2, pre3, pre4;
     bool flag = 0;
     float rate = 0.9;
@@ -855,7 +863,6 @@ void out(int *out1, int *out2, int *out3, int *out4)
         pre4 = *out4;
         flag = 1;
     }
-
     yrate = (thr - 1000) / 500.0 + 0.25;
     yrate = constrain(yrate, 0, 1);
     *out1 = thr + yrate * (-posoutrate[pitch] - posoutrate[yaw] - posoutrate[roll]);

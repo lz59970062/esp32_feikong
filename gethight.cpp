@@ -23,6 +23,9 @@ unsigned short lenth_val = 0;
 unsigned char i2c_rx_buf[16];
 unsigned char dirsend_flag = 0;
 unsigned int TOF_I2Caddress = 82;
+bool init_flag=0;
+float v_off;
+void gethight(float *hight, float *d_value);
 #define NUMBER 6
 void fsort(float *s,int n){
    int i,j,pos;
@@ -160,12 +163,23 @@ void gethigh_init()
     gethight(&alt_init);
 #endif
 #ifdef TOF
+   /*  double sum=0;
+    float d_value; */
     Wire.begin(21, 22);
     gethight(&alt_init);
     while (!alt_init)
     {
         gethight(&alt_init);
     }
+    /* 
+    for(int i =0;i<200;i++){
+        gethight(&alt_init,&d_value);
+
+        sum+=d_value;
+
+    }
+    v_off=sum/200;
+    init_flag=1; */
 #endif
 }
 
@@ -212,11 +226,13 @@ void gethight(float *hight, float *d_value)
 #endif
     distance=data_correction(distance)*0.1;
     *hight = distance;
+    // dt = 0.001;
     float v = (distance - prevalue) / dt; //mm/s
     v==0?v=pre_v:1;
     pre_v=v;
     v=fiter2(v);
     *d_value = v * 10;              //cm/s
+    // if(init_flag) *d_value-=v_off;
     prevalue = distance;
     
 }

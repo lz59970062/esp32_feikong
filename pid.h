@@ -3,6 +3,7 @@ void posturepid();
 void heightcontrol();
 void Reset_pose_i();
 void hight_acc();
+void hight_v();
 void out(int *out1,int *out2,int *out3,int *out4);
 #define roll 0
 #define pitch 1
@@ -10,7 +11,7 @@ void out(int *out1,int *out2,int *out3,int *out4);
 typedef struct
 {
     float p1[3], i1[3], d1[3], p2[3], i2[3], d2[3];
-    float p[2], i[2], d[2];
+    float p[3], i[3], d[3];
     float expect[3];
     float ex_h;
     float evx,xp,xi,xd;
@@ -69,7 +70,7 @@ public:
     float Dis_Err_LPF;
     float Last_Dis_Err_LPF;
     float Pre_Last_Dis_Err_LPF;
-    Butter_Parameter Control_Device_Div_LPF_Parameter;
+    Butter_Parameter Control_Device_Err_LPF_Parameter;
     Butter_BufferData Control_Device_LPF_Buffer;//控制器低通输入输出缓冲
     Testime PID_Controller_Dt;    //前面有Testime结构体的定义
     float Scale_Kp;
