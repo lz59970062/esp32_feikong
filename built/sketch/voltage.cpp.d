@@ -1,6 +1,6 @@
-e:\飞总\电赛\电赛\built\sketch\voltage.cpp.o: \
- e:\飞总\电赛\电赛\built\sketch\voltage.cpp \
- e:\飞总\电赛\电赛\built\sketch\voltage.h \
+e:\飞总\电赛\built\sketch\voltage.cpp.o: \
+ e:\飞总\电赛\built\sketch\voltage.cpp \
+ e:\飞总\电赛\built\sketch\voltage.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32/Arduino.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/stdint.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/machine/_default_types.h \

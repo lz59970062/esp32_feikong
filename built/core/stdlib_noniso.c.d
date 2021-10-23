@@ -1,4 +1,4 @@
-e:\飞总\电赛\电赛\built\core\stdlib_noniso.c.o: \
+e:\飞总\电赛\built\core\stdlib_noniso.c.o: \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32\stdlib_noniso.c \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/stdlib.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/machine/ieeefp.h \

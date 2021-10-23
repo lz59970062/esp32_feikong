@@ -4,7 +4,7 @@ void heightcontrol();
 void Reset_pose_i();
 void hight_acc();
 void hight_v();
-void out(int *out1,int *out2,int *out3,int *out4);
+void out(int *out1, int *out2,int *out3,int *out4 );
 #define roll 0
 #define pitch 1
 #define yaw 2

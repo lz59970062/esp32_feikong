@@ -1,10 +1,10 @@
 #include <Arduino.h>
-#line 41 "e:\\飞总\\电赛\\电赛\\main.ino"
+#line 43 "e:\\飞总\\电赛\\main.ino"
 void setup();
-#line 61 "e:\\飞总\\电赛\\电赛\\main.ino"
+#line 64 "e:\\飞总\\电赛\\main.ino"
 void loop();
-#line 0 "e:\\飞总\\电赛\\电赛\\main.ino"
-#line 1 "e:\\飞总\\电赛\\电赛\\JY901.cpp"
+#line 0 "e:\\飞总\\电赛\\main.ino"
+#line 1 "e:\\飞总\\电赛\\JY901.cpp"
 #include "JY901.h"
 #include "string.h"
 
@@ -133,16 +133,18 @@ void CJY901::GetQ()
 	readRegisters(ucDevAddr,Q0,8,(char*)&stcSQ);
 }
 CJY901 JY901 = CJY901();
-#line 1 "e:\\飞总\\电赛\\电赛\\main.ino"
+#line 1 "e:\\飞总\\电赛\\main.ino"
 #include <soc/soc.h>
 #include <soc/rtc_cntl_reg.h>
 #include "escout.h"
 #include "state_handle.h"
 #include "imu.h"
 #include "gethight.h"
+#include "control.h"
 #include <EEPROM.h>
 #include "optical_flow.h"
 #include <Arduino.h>
+
 #include "pid.h"
 #define Debug 1
 #define LEDPIN 27
@@ -158,10 +160,10 @@ int out1, out2, out3, out4;
 float ex_roll, ex_pitch, ex_yaw;
 
 k pid;
-
-
+extern V velocity;
 uint8_t fly_flag;
 int lenth = sizeof(k);
+int lenth_V = sizeof(V);
 byte buff[sizeof(k)];
 int lowpower, verylowpower;
 
@@ -176,11 +178,12 @@ void task_led(void *pvParameters);
 //wifi在core0，其他在core1；1为大核
 void setup()
 {
-  esc_init(25, 32, 33, 26);
+  esc_init(25, 26, 33, 32);
   led_init();
   disableCore0WDT();
   disableCore1WDT();
   Serial.begin(115200);
+  Serial2.begin(115200);
   EEPROM.begin(lenth + 1);
   gethigh_init();
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);                        //关闭低电压检测,避免无限重启
@@ -188,7 +191,7 @@ void setup()
   xTaskCreatePinnedToCore(Task2, "Task2", 10000, NULL, 1, NULL, 1);
   xTaskCreatePinnedToCore(vTask3, "rate", 7000, NULL, 1, NULL, 1);
   xTaskCreatePinnedToCore(vTask4, "pos", 10000, NULL, 3, NULL, 1);
-  xTaskCreatePinnedToCore(task_high, "high_pid",20000, NULL, 1, NULL, 1);
+  xTaskCreatePinnedToCore(task_high, "high_pid", 20000, NULL, 1, NULL, 1);
   xTaskCreatePinnedToCore(task_led, "led_blink", 1024, NULL, 2, NULL, 0);
   //vTaskStartScheduler();
   //实现任务的函数名称（task1）；任务的任何名称（“ task1”等）；分配给任务的堆栈大小，以字为单位；任务输入参数（可以为NULL）；任务的优先级（0是最低优先级）；任务句柄（可以为NULL）；任务将运行的内核ID（0或1）
@@ -204,9 +207,10 @@ void Task1(void *pvParameters)
   const portTickType xFrequency = 1;
   bool ifreaded = 0;
   int time1 = 0;
+  
   imu_init();
-  KFP KFP_height = {0.02, 0, 0, 0, 0.001, 0.543};
-  //unsigned portBASE_TYPE uxHighWaterMark;//
+
+  //unsigned portBASE_TYPE uxHighWaterMark;
   xLastWakeTime = xTaskGetTickCount();
   Serial.println("start");
   //在这里可以添加一些代码，这样的话这个任务执行时会先执行一次这里的内容（当然后面进入while循环之后不会再执行这部分了）
@@ -238,20 +242,33 @@ void Task1(void *pvParameters)
       copy(pid);
       ifreaded = 0;
     }
-    gethight(&raw_altitude, &v_hight);
-    //vTaskDelay(1);
-    altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180); //////高度修正存在问题！！！！！！！！！！！！！
+     gethight(&raw_altitude, &v_hight);
+    
+    altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180); //////高度修正存在问题！！！！！！！！！！！！！/
     //altitude = kalmanFilter(&KFP_height, raw_altitude);
+    //Serial.printf("%f   %f   %f   \n",grand_ax,grand_ay,grand_az);
     //Serial.printf("%f   %f    %f     \n",pid.p1[0],pid.p2[1],pid.i1[2]);
     //////////////////////////////////read sensor///////////////////////////////
-    //Serial.printf("vz %f\n",v_hight);
+    //Serial.printf("vz %f  %f\n",v_hight,altitude);
     //Serial.printf("%f,%f,%f\n", Roll_angle, Pitch_angle, Yaw_angle);
     //getquater();
     getdata();
     
+    //get_imu_h(&altitude);
+    
     hposcnt++;
     if (hposcnt % 25 == 0)
+    {
       opt_co(); //25毫秒执行一次//////光流pid异常
+      byte senddata[sizeof(V)];
+      velocity.high = altitude;
+      velocity.Roll_=Roll_angle;
+      velocity.Pitch_=Pitch_angle;
+      velocity.Yaw_ =Yaw_angle;
+      velocity.v_z=v_hight;
+      memcpy(senddata, &velocity, lenth_V);
+      Serial2.write(senddata, sizeof(senddata));
+    }
     if (hposcnt == 75)
     {
       hposcnt = 0;
@@ -283,12 +300,12 @@ void Task2(void *pvParameters)
   {
     static bool state = 0;
 
-    //uxHighWaterMark=uxTaskGetStackHighWaterMark( NULL);
+    //uxHighWaterMark=uxTaskGetStackHighWaterMark(NULL);
     //Serial.print("Task2");
     //Serial.println(uxHighWaterMark);
     //if (millis()-now==1000) Serial.printf("f: %d",time2);
     //Serial.println("i m running");
-    //////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     out(&out1, &out2, &out3, &out4);
     vTaskDelay(1);
@@ -371,11 +388,11 @@ void task_high(void *pvParameters)
       heightcontrol();
     if (cnt % 2 == 0)
       hight_v();
-  /*   if (cnt % 2 == 0)
+    /*   if (cnt % 2 == 0)
       {hight_acc();}  */
     if (cnt++ == 120)
       cnt = 0;
-    
+
     //Serial.printf("%f ,%f ,%f ,%d ,%f ,%f\n", expect_h, altitude, grand_az, hight1_out, h2.Control_OutPut, h3.Control_OutPut);
   }
 }

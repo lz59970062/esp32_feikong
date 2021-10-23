@@ -1,4 +1,4 @@
-e:\飞总\电赛\电赛\built\libraries\Wire\Wire.cpp.o: \
+e:\飞总\电赛\built\libraries\Wire\Wire.cpp.o: \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\libraries\Wire\src\Wire.cpp \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/stdlib.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/machine/ieeefp.h \

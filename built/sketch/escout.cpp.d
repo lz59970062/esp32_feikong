@@ -1,5 +1,5 @@
-e:\飞总\电赛\电赛\built\sketch\escout.cpp.o: \
- e:\飞总\电赛\电赛\built\sketch\escout.cpp \
+e:\飞总\电赛\built\sketch\escout.cpp.o: \
+ e:\飞总\电赛\built\sketch\escout.cpp \
  C:\Users\lz599\Documents\Arduino\libraries\ESP32Servo\src/ESP32Servo.h \
  C:\Users\lz599\Documents\Arduino\libraries\ESP32Servo\src/analogWrite.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32/esp32-hal-ledc.h \

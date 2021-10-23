@@ -1,7 +1,9 @@
+#include <Arduino.h>
+#include "control.h"
 #define roll 0
 #define pitch 1
 #define yaw 2
-#include <Arduino.h>
+
 #define Debug 1
 #define i_limit 100
 #define ratepid_1 1
@@ -14,6 +16,7 @@ extern float grand_az;
 extern float g_vx, g_vy, g_vz;
 extern float ex_roll, ex_pitch, ex_yaw;
 extern float expect_h;
+extern float zoff;
 extern bool inited;
 bool stable = 0;
 float xout, yout;
@@ -225,15 +228,20 @@ void posturepid()
             Flying_flag = 0;
             Start_flag = 0;
         }
+        posepid.expect[yaw] = zoff;
+        posepid.expect[yaw] = constrain(posepid.expect[yaw], -150, 150);
 
         poserror.error1[roll] = posepid.expect[roll] - Roll_angle;
         poserror.error1[pitch] = posepid.expect[pitch] - Pitch_angle;
-        poserror.error1[yaw] = 0; //posepid.expect[yaw] - Yaw_angle;
+        poserror.error1[yaw] = posepid.expect[yaw] - Yaw_angle; //;
         //fabs(poserror.error1[roll]) < 0.5 ? poserror.error1[roll] = 0 : 1;
         //fabs(poserror.error1[pitch]) < 0.5 ? poserror.error1[pitch] = 0 : 1;
         //fabs(poserror.error1[yaw]) < 0.5 ? poserror.error1[yaw] = 0 : 1;
         //Serial.printf("%f,%f\n", posepid.expect[pitch], Pitch_angle);
-
+        if (posepid.state[3])
+        {
+            Serial.printf("%f,%f\n", posepid.expect[roll], Roll_angle);
+        }
         posout1[roll].op = posepid.p1[roll] * poserror.error1[roll];
 
         posout1[roll].oi += ki_process(posepid.i1[roll], poserror.error1[roll], 10, posout1[roll].oi) * poserror.error1[roll] * dt;
@@ -253,9 +261,8 @@ void posturepid()
         if (Landed_flag = 1)
             posout1[pitch].oi = 0;
         posoutangle[pitch] = constrain(posout1[pitch].op + posout1[pitch].oi + posout1[pitch].od, -800, 800);
-
         posout1[yaw].op = posepid.p1[yaw] * poserror.error1[yaw];
-        posout1[yaw].oi += ki_process(posepid.i1[yaw], poserror.error1[yaw], 20) * (poserror.error1[yaw]) * dt;
+        posout1[yaw].oi += ki_process(posepid.i1[yaw], poserror.error1[yaw], 10) * (poserror.error1[yaw]) * dt;
         posout1[yaw].oi = constrain(posout1[yaw].oi, -150, 150);
         posout1[yaw].od = posepid.d1[yaw] * (poserror.error1[yaw] - prerror1.pre[yaw]) / dt;
         prerror1.pre[yaw] = poserror.error1[yaw];
@@ -275,6 +282,7 @@ void rate_pid()
     if (!initflag)
     {
         Set_Cutoff_Frequency(500, 20, &rate_parameter);
+        initflag = 1;
     }
     ///////////////////////////// 二级pid/////////////////////////////////////////////////
     expect2.ex[roll] = posoutangle[roll];
@@ -283,8 +291,8 @@ void rate_pid()
 
     poserror.error2[roll] = expect2.ex[roll] - gx;
     poserror.error2[pitch] = expect2.ex[pitch] - gy;
-    //poserror.error2[yaw] = expect2.ex[yaw] - gz;
-    poserror.error2[yaw] = posepid.expect[yaw];
+    poserror.error2[yaw] = expect2.ex[yaw] - gz;
+    //poserror.error2[yaw] = posepid.expect[yaw]-gz;
     poserror.error2[roll] = Control_Device_LPF(poserror.error2[roll], &rate_datax, &rate_parameter);
     poserror.error2[pitch] = Control_Device_LPF(poserror.error2[pitch], &rate_datay, &rate_parameter);
     poserror.error2[yaw] = Control_Device_LPF(poserror.error2[yaw], &rate_dataz, &rate_parameter);
@@ -305,10 +313,10 @@ void rate_pid()
 
     posout2[yaw].op = posepid.p2[yaw] * poserror.error2[yaw];
     posout2[yaw].oi += ki_process(posepid.i2[yaw], poserror.error2[yaw], 300) * poserror.error2[yaw] * dt;
-    posout2[yaw].oi = constrain(posout2[yaw].oi, -200, 200);
+    posout2[yaw].oi = constrain(posout2[yaw].oi, -100, 100);
     posout2[yaw].od = posepid.d2[yaw] * (poserror.error2[yaw] - prerror2.pre[yaw]) / dt;
     prerror2.pre[yaw] = poserror.error2[yaw];
-    posoutrate[yaw] = constrain(posout2[yaw].op + posout2[yaw].oi + posout2[yaw].od, -500, 500);
+    posoutrate[yaw] = constrain(posout2[yaw].op + posout2[yaw].oi + posout2[yaw].od, -300, 300);
 }
 void Reset_pose_i()
 {
@@ -328,23 +336,33 @@ void Reset_pose_i()
 
 float estimateMinThru(void)
 {
-    float minThru = -0.55f;
-    float BatteryVal = analogRead(15) * 0.00374277; //实际电压值计算0.00374277为实验得出的系数
+    float minThru = 1;
+    float BatteryVal = analogRead(15) * 0.00362005622; //实际电压值计算0.00374277为实验得出的系数
+    //Serial.printf("%f,\n",BatteryVal);
+    BatteryVal /= 3L;
+    if (BatteryVal > 3.2 && BatteryVal < 4.2)
+    {
+        if (BatteryVal > 4.05)
+        {
+            minThru = 1.0;
+        }
+        else if (BatteryVal > 3.80)
+        {
+            minThru = 1.02;
+        }
+        else if (BatteryVal > 3.7)
+        {
+            minThru = 1.03;
+        }
+        else
+        {
+            minThru = 1.04;
+        }
 
-    if (BatteryVal > 4.05)
-    {
-        minThru = -0.40f;
-    }
-    else if (BatteryVal > 3.90)
-    {
-        minThru = -0.45f;
+        return minThru;
     }
     else
-    {
-        minThru = -0.55f;
-    }
-
-    return minThru;
+        return 1;
 }
 
 //33
@@ -393,6 +411,7 @@ public:
     void Set_i_error(float imax);
     void Set_i_mode(bool elimitflag, bool isepara_flag, bool ilimitflag);
     void Set_Cutoff_Frequency(float sample_frequent, float cutoff_frequent, Butter_Parameter *LPF);
+
     // float ntegrate_Separation_Err;
     // float Integrate;
     //  Integrate_Max, Control_OutPut, Last_Control_OutPut, Control_OutPut_Limit, Pre_Last_Err，;
@@ -874,7 +893,7 @@ void out(int *out1, int *out2, int *out3, int *out4)
     *out2 = *out2 * rate + (1 - rate) * pre2;
     *out3 = *out3 * rate + (1 - rate) * pre3;
     *out4 = *out4 * rate + (1 - rate) * pre4;
-    if (Roll_angle > 80 || Pitch_angle > 80)
+    if (abs(Roll_angle) > 70 || abs(Pitch_angle) > 70)
     {
         *out1 = *out2 = *out3 = *out4 = 1000;
     }

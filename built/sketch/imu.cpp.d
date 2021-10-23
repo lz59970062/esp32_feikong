@@ -1,5 +1,4 @@
-e:\飞总\电赛\电赛\built\sketch\imu.cpp.o: \
- e:\飞总\电赛\电赛\built\sketch\imu.cpp \
+e:\飞总\电赛\built\sketch\imu.cpp.o: e:\飞总\电赛\built\sketch\imu.cpp \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\libraries\Wire\src/Wire.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32/esp32-hal.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/stdint.h \
@@ -114,7 +113,7 @@ e:\飞总\电赛\电赛\built\sketch\imu.cpp.o: \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/ctype.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32/pgmspace.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32/Printable.h \
- e:\飞总\电赛\电赛\built\sketch\JY901.h \
+ e:\飞总\电赛\built\sketch\JY901.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32/Arduino.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/freertos/freertos/task.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/freertos/freertos/semphr.h \

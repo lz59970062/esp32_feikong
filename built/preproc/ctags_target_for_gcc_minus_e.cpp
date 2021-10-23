@@ -1,6 +1,6 @@
-# 1 "e:\\飞总\\电赛\\电赛\\JY901.cpp"
-# 2 "e:\\飞总\\电赛\\电赛\\JY901.cpp" 2
-# 3 "e:\\飞总\\电赛\\电赛\\JY901.cpp" 2
+# 1 "e:\\飞总\\电赛\\JY901.cpp"
+# 2 "e:\\飞总\\电赛\\JY901.cpp" 2
+# 3 "e:\\飞总\\电赛\\JY901.cpp" 2
 
 CJY901 ::CJY901 ()
 {
@@ -127,17 +127,19 @@ void CJY901::GetQ()
  readRegisters(ucDevAddr,0x51,8,(char*)&stcSQ);
 }
 CJY901 JY901 = CJY901();
-# 1 "e:\\飞总\\电赛\\电赛\\main.ino"
-# 2 "e:\\飞总\\电赛\\电赛\\main.ino" 2
-# 3 "e:\\飞总\\电赛\\电赛\\main.ino" 2
-# 4 "e:\\飞总\\电赛\\电赛\\main.ino" 2
-# 5 "e:\\飞总\\电赛\\电赛\\main.ino" 2
-# 6 "e:\\飞总\\电赛\\电赛\\main.ino" 2
-# 7 "e:\\飞总\\电赛\\电赛\\main.ino" 2
-# 8 "e:\\飞总\\电赛\\电赛\\main.ino" 2
-# 9 "e:\\飞总\\电赛\\电赛\\main.ino" 2
-# 10 "e:\\飞总\\电赛\\电赛\\main.ino" 2
-# 11 "e:\\飞总\\电赛\\电赛\\main.ino" 2
+# 1 "e:\\飞总\\电赛\\main.ino"
+# 2 "e:\\飞总\\电赛\\main.ino" 2
+# 3 "e:\\飞总\\电赛\\main.ino" 2
+# 4 "e:\\飞总\\电赛\\main.ino" 2
+# 5 "e:\\飞总\\电赛\\main.ino" 2
+# 6 "e:\\飞总\\电赛\\main.ino" 2
+# 7 "e:\\飞总\\电赛\\main.ino" 2
+# 8 "e:\\飞总\\电赛\\main.ino" 2
+# 9 "e:\\飞总\\电赛\\main.ino" 2
+# 10 "e:\\飞总\\电赛\\main.ino" 2
+# 11 "e:\\飞总\\电赛\\main.ino" 2
+
+# 13 "e:\\飞总\\电赛\\main.ino" 2
 #define Debug 1
 #define LEDPIN 27
 float Yaw_angle, Roll_angle, Pitch_angle;
@@ -152,10 +154,10 @@ int out1, out2, out3, out4;
 float ex_roll, ex_pitch, ex_yaw;
 
 k pid;
-
-
+extern V velocity;
 uint8_t fly_flag;
 int lenth = sizeof(k);
+int lenth_V = sizeof(V);
 byte buff[sizeof(k)];
 int lowpower, verylowpower;
 
@@ -170,67 +172,68 @@ void task_led(void *pvParameters);
 //wifi在core0，其他在core1；1为大核
 void setup()
 {
-  esc_init(25, 32, 33, 26);
+  esc_init(25, 26, 33, 32);
   led_init();
   disableCore0WDT();
   disableCore1WDT();
   Serial.begin(115200);
+  Serial2.begin(115200);
   EEPROM.begin(lenth + 1);
   gethigh_init();
-  ({ do { if (__builtin_constant_p(!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC)) && !(!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC))) { extern __attribute__((error("(Cannot use WRITE_PERI_REG for DPORT registers use DPORT_WRITE_PERI_REG)"))) void failed_compile_time_assert(void); failed_compile_time_assert(); } (("(Cannot use WRITE_PERI_REG for DPORT registers use DPORT_WRITE_PERI_REG)" && (!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC))) ? (void)0 : __assert_func ("e:\\飞总\\电赛\\电赛\\main.ino", 50, __PRETTY_FUNCTION__, "\"(Cannot use WRITE_PERI_REG for DPORT registers use DPORT_WRITE_PERI_REG)\" && (!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC))")); } while(0);; (*((volatile uint32_t *)((0x3ff48000 + 0xd4)))) = (uint32_t)(0); }); //关闭低电压检测,避免无限重启
+  ({ do { if (__builtin_constant_p(!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC)) && !(!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC))) { extern __attribute__((error("(Cannot use WRITE_PERI_REG for DPORT registers use DPORT_WRITE_PERI_REG)"))) void failed_compile_time_assert(void); failed_compile_time_assert(); } (("(Cannot use WRITE_PERI_REG for DPORT registers use DPORT_WRITE_PERI_REG)" && (!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC))) ? (void)0 : __assert_func ("e:\\飞总\\电赛\\main.ino", 53, __PRETTY_FUNCTION__, "\"(Cannot use WRITE_PERI_REG for DPORT registers use DPORT_WRITE_PERI_REG)\" && (!(((((0x3ff48000 + 0xd4))) >= 0x3ff00000) && (((0x3ff48000 + 0xd4))) <= 0x3ff13FFC))")); } while(0);; (*((volatile uint32_t *)((0x3ff48000 + 0xd4)))) = (uint32_t)(0); }); //关闭低电压检测,避免无限重启
   xTaskCreatePinnedToCore(Task1, "Task1", 15000, 
-# 51 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 54 "e:\\飞总\\电赛\\main.ino" 3 4
                                                 __null
-# 51 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 54 "e:\\飞总\\电赛\\main.ino"
                                                     , 2, 
-# 51 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 54 "e:\\飞总\\电赛\\main.ino" 3 4
                                                          __null
-# 51 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 54 "e:\\飞总\\电赛\\main.ino"
                                                              , 0); //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
   xTaskCreatePinnedToCore(Task2, "Task2", 10000, 
-# 52 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 55 "e:\\飞总\\电赛\\main.ino" 3 4
                                                 __null
-# 52 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 55 "e:\\飞总\\电赛\\main.ino"
                                                     , 1, 
-# 52 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 55 "e:\\飞总\\电赛\\main.ino" 3 4
                                                          __null
-# 52 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 55 "e:\\飞总\\电赛\\main.ino"
                                                              , 1);
   xTaskCreatePinnedToCore(vTask3, "rate", 7000, 
-# 53 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 56 "e:\\飞总\\电赛\\main.ino" 3 4
                                                __null
-# 53 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 56 "e:\\飞总\\电赛\\main.ino"
                                                    , 1, 
-# 53 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 56 "e:\\飞总\\电赛\\main.ino" 3 4
                                                         __null
-# 53 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 56 "e:\\飞总\\电赛\\main.ino"
                                                             , 1);
   xTaskCreatePinnedToCore(vTask4, "pos", 10000, 
-# 54 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 57 "e:\\飞总\\电赛\\main.ino" 3 4
                                                __null
-# 54 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 57 "e:\\飞总\\电赛\\main.ino"
                                                    , 3, 
-# 54 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 57 "e:\\飞总\\电赛\\main.ino" 3 4
                                                         __null
-# 54 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 57 "e:\\飞总\\电赛\\main.ino"
                                                             , 1);
-  xTaskCreatePinnedToCore(task_high, "high_pid",20000, 
-# 55 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                                      __null
-# 55 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                          , 1, 
-# 55 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
-                                                               __null
-# 55 "e:\\飞总\\电赛\\电赛\\main.ino"
-                                                                   , 1);
+  xTaskCreatePinnedToCore(task_high, "high_pid", 20000, 
+# 58 "e:\\飞总\\电赛\\main.ino" 3 4
+                                                       __null
+# 58 "e:\\飞总\\电赛\\main.ino"
+                                                           , 1, 
+# 58 "e:\\飞总\\电赛\\main.ino" 3 4
+                                                                __null
+# 58 "e:\\飞总\\电赛\\main.ino"
+                                                                    , 1);
   xTaskCreatePinnedToCore(task_led, "led_blink", 1024, 
-# 56 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 59 "e:\\飞总\\电赛\\main.ino" 3 4
                                                       __null
-# 56 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 59 "e:\\飞总\\电赛\\main.ino"
                                                           , 2, 
-# 56 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 59 "e:\\飞总\\电赛\\main.ino" 3 4
                                                                __null
-# 56 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 59 "e:\\飞总\\电赛\\main.ino"
                                                                    , 0);
   //vTaskStartScheduler();
   //实现任务的函数名称（task1）；任务的任何名称（“ task1”等）；分配给任务的堆栈大小，以字为单位；任务输入参数（可以为NULL）；任务的优先级（0是最低优先级）；任务句柄（可以为NULL）；任务将运行的内核ID（0或1）
@@ -246,9 +249,10 @@ void Task1(void *pvParameters)
   const TickType_t xFrequency = 1;
   bool ifreaded = 0;
   int time1 = 0;
+
   imu_init();
-  KFP KFP_height = {0.02, 0, 0, 0, 0.001, 0.543};
-  //unsigned portBASE_TYPE uxHighWaterMark;//
+
+  //unsigned portBASE_TYPE uxHighWaterMark;
   xLastWakeTime = xTaskGetTickCount();
   Serial.println("start");
   //在这里可以添加一些代码，这样的话这个任务执行时会先执行一次这里的内容（当然后面进入while循环之后不会再执行这部分了）
@@ -280,20 +284,33 @@ void Task1(void *pvParameters)
       copy(pid);
       ifreaded = 0;
     }
-    gethight(&raw_altitude, &v_hight);
-    //vTaskDelay(1);
-    altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180); //////高度修正存在问题！！！！！！！！！！！！！
+     gethight(&raw_altitude, &v_hight);
+
+    altitude = raw_altitude * cos(Roll_angle * 3.14159 / 180) * cos(Pitch_angle * 3.14159 / 180); //////高度修正存在问题！！！！！！！！！！！！！/
     //altitude = kalmanFilter(&KFP_height, raw_altitude);
+    //Serial.printf("%f   %f   %f   \n",grand_ax,grand_ay,grand_az);
     //Serial.printf("%f   %f    %f     \n",pid.p1[0],pid.p2[1],pid.i1[2]);
     //////////////////////////////////read sensor///////////////////////////////
-    //Serial.printf("vz %f\n",v_hight);
+    //Serial.printf("vz %f  %f\n",v_hight,altitude);
     //Serial.printf("%f,%f,%f\n", Roll_angle, Pitch_angle, Yaw_angle);
     //getquater();
     getdata();
 
+    //get_imu_h(&altitude);
+
     hposcnt++;
     if (hposcnt % 25 == 0)
+    {
       opt_co(); //25毫秒执行一次//////光流pid异常
+      byte senddata[sizeof(V)];
+      velocity.high = altitude;
+      velocity.Roll_=Roll_angle;
+      velocity.Pitch_=Pitch_angle;
+      velocity.Yaw_ =Yaw_angle;
+      velocity.v_z=v_hight;
+      memcpy(senddata, &velocity, lenth_V);
+      Serial2.write(senddata, sizeof(senddata));
+    }
     if (hposcnt == 75)
     {
       hposcnt = 0;
@@ -325,12 +342,12 @@ void Task2(void *pvParameters)
   {
     static bool state = 0;
 
-    //uxHighWaterMark=uxTaskGetStackHighWaterMark( NULL);
+    //uxHighWaterMark=uxTaskGetStackHighWaterMark(NULL);
     //Serial.print("Task2");
     //Serial.println(uxHighWaterMark);
     //if (millis()-now==1000) Serial.printf("f: %d",time2);
     //Serial.println("i m running");
-    //////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     out(&out1, &out2, &out3, &out4);
     vTaskDelay(1);
@@ -381,14 +398,14 @@ void vTask4(void *pvParameters)
     if (!flag)
     {
       uxPriority = uxTaskPriorityGet(
-# 205 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 222 "e:\\飞总\\电赛\\main.ino" 3 4
                                     __null
-# 205 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 222 "e:\\飞总\\电赛\\main.ino"
                                         );
       vTaskPrioritySet(
-# 206 "e:\\飞总\\电赛\\电赛\\main.ino" 3 4
+# 223 "e:\\飞总\\电赛\\main.ino" 3 4
                       __null
-# 206 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 223 "e:\\飞总\\电赛\\main.ino"
                           , (uxPriority - 2));
       flag = 1;
     }
@@ -421,10 +438,10 @@ void task_high(void *pvParameters)
       heightcontrol();
     if (cnt % 2 == 0)
       hight_v();
-  /*   if (cnt % 2 == 0)
+    /*   if (cnt % 2 == 0)
 
       {hight_acc();}  */
-# 240 "e:\\飞总\\电赛\\电赛\\main.ino"
+# 257 "e:\\飞总\\电赛\\main.ino"
     if (cnt++ == 120)
       cnt = 0;
 

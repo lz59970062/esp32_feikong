@@ -1,4 +1,4 @@
-e:\飞总\电赛\电赛\built\libraries\ESP32Servo\ESP32Servo.cpp.o: \
+e:\飞总\电赛\built\libraries\ESP32Servo\ESP32Servo.cpp.o: \
  C:\Users\lz599\Documents\Arduino\libraries\ESP32Servo\src\ESP32Servo.cpp \
  C:\Users\lz599\Documents\Arduino\libraries\ESP32Servo\src/ESP32Servo.h \
  C:\Users\lz599\Documents\Arduino\libraries\ESP32Servo\src/analogWrite.h \

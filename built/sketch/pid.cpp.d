@@ -1,5 +1,4 @@
-e:\飞总\电赛\电赛\built\sketch\pid.cpp.o: \
- e:\飞总\电赛\电赛\built\sketch\pid.cpp \
+e:\飞总\电赛\built\sketch\pid.cpp.o: e:\飞总\电赛\built\sketch\pid.cpp \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32/Arduino.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/stdint.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/newlib/machine/_default_types.h \
@@ -130,4 +129,5 @@ e:\飞总\电赛\电赛\built\sketch\pid.cpp.o: \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32/Esp.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/spi_flash/esp_partition.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6/tools/sdk/include/spi_flash/esp_spi_flash.h \
- C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\variants\doitESP32devkitV1/pins_arduino.h
+ C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\variants\doitESP32devkitV1/pins_arduino.h \
+ e:\飞总\电赛\built\sketch\control.h

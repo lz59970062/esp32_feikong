@@ -1,5 +1,5 @@
 #include <Arduino.h>
-
+#include "control.h"
 #define echo 13
 #define trig 2
 #define ULTRA 1
@@ -24,9 +24,13 @@ unsigned char i2c_rx_buf[16];
 unsigned char dirsend_flag = 0;
 unsigned int TOF_I2Caddress = 82;
 bool init_flag=0;
+extern float azoff;
+extern float grand_az;
 float v_off;
 void gethight(float *hight, float *d_value);
+
 #define NUMBER 6
+
 void fsort(float *s,int n){
    int i,j,pos;
    float tempmin ,temp;
@@ -52,16 +56,15 @@ float fiter2(float input)
     static float f[NUM] = {0};
     float  sum = 0;
     f[cnt++] = input;
-    if (cnt == 5)
+    if (cnt == NUM)
         cnt = 0;
-    for (int i = 0; i < NUM; i++)
+    /* for (int i = 0; i < NUM; i++)
     {
         f[i] == 0 ? f[i] = input : 1;
-    }
+    } */
     for (int i = 0; i < NUM; i++)
     {
         sum+=f[i];
-
     }
     return sum/NUM;
 }
@@ -171,6 +174,7 @@ void gethigh_init()
     {
         gethight(&alt_init);
     }
+    
     /* 
     for(int i =0;i<200;i++){
         gethight(&alt_init,&d_value);
@@ -226,13 +230,17 @@ void gethight(float *hight, float *d_value)
 #endif
     distance=data_correction(distance)*0.1;
     *hight = distance;
-    // dt = 0.001;
-    float v = (distance - prevalue) / dt; //mm/s
+   
+    float v = (distance - prevalue) / dt; //cm/s
     v==0?v=pre_v:1;
     pre_v=v;
     v=fiter2(v);
-    *d_value = v * 10;              //cm/s
-    // if(init_flag) *d_value-=v_off;
+    *d_value = v *10 ;              //cm/s
+    /*//////////////////
+   float v;
+   h_v.fiter(dt,grand_az-azoff,distance,hight,&v);
+   *d_value = v;*/
+    ///////////////////////////////////
     prevalue = distance;
     
 }

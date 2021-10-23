@@ -1,4 +1,4 @@
-e:\飞总\电赛\电赛\built\core\esp32-hal-timer.c.o: \
+e:\飞总\电赛\built\core\esp32-hal-timer.c.o: \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32\esp32-hal-timer.c \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32\esp32-hal-timer.h \
  C:\Users\lz599\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.6\cores\esp32\esp32-hal.h \
