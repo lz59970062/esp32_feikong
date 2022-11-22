@@ -1,4 +1,5 @@
-
+#ifndef __GETHIGHT_H
+#define __GETHIGHT_H
 #ifdef PRESS
 #include<BMP280_DEV.h>
 #endif
@@ -18,3 +19,4 @@ typedef struct
 float kalmanFilter(KFP *kfp,float input);
 //2. 以高度为例 定义卡尔曼结构体并初始化参数
 
+#endif 
